@@ -1,26 +1,26 @@
-# Flavor Bridge
+# Flavor Bridge 🍵
 
-**Healthy food that still tastes like home.**
+**Healthy food that still tastes like home.** 🏠
 
 Flavor Bridge helps people on restricted diets (low salt, low sugar, dairy-free, vegan) rebuild a favourite dish so it keeps its taste. Instead of just deleting salt, sugar or dairy, it finds *smell twins*, natural ingredients that share the aroma of what was removed, and checks the rebuilt dish against the limit the user sets.
 
-Built by **Team Quad Core** for **Foodoscope Fork It 2026** (IIIT Delhi, CoSyLab).
+Built by **Team Quad Core** 🤜🤛 for **Foodoscope Fork It 2026** (IIIT Delhi, CoSyLab).
 
 > **Live demo:** https://flavor-bridge.ai.studio/
 
 ---
 
-## The problem
+## The problem ⚠️
 
 Diets fail when food stops tasting good. Most diet apps only count calories, and simply cutting salt, butter or sugar leaves bland food that people give up on.
 
-## Our idea
+## Our idea 💡
 
 1. **Cut** only what the diet restricts (salt, sugar, fat, dairy, allergens).
 2. **Find smell twins** using flavor-molecule data, so the aroma of the removed ingredient is recreated with natural spices and ingredients.
 3. **Rebuild** the dish with real cooking steps, then **check** it against the limit.
 
-## Features
+## Features ✨
 
 | Feature | Status |
 |---|---|
@@ -93,7 +93,7 @@ On Vercel, add the same names under **Project Settings, Environment Variables**,
 - Do not name secrets with `NEXT_PUBLIC_` or `VITE_` prefixes, because those are sent to the browser.
 - If a key is ever exposed, generate a new one immediately.
 
-## Team Quad Core
+## Team Quad Core 𐦂𖨆𐀪𖠋𐀪𐀪
 
 - Namit Bisht (Team Leader)
 - Shreya Gupta
