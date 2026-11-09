@@ -6,8 +6,7 @@ Flavor Bridge helps people on restricted diets (low salt, low sugar, dairy-free,
 
 Built by **Team Quad Core** for **Foodoscope Fork It 2026** (IIIT Delhi, CoSyLab).
 
-> **Live demo:** _add your Vercel link here_
-> **Pitch deck:** _add link here_
+> **Live demo:** https://flavor-bridge.ai.studio/
 
 ---
 
