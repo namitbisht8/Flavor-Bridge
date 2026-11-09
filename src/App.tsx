@@ -40,7 +40,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative text-[#193826] selection:bg-[#FFF0C5] selection:text-[#193826]">
+    <div className="min-h-screen flex flex-col relative text-[#193826] dark:text-[#F1F6F2] selection:bg-[#FFF0C5] selection:text-[#193826] dark:selection:bg-[#FFB34D] dark:selection:text-[#1A1200]">
       {/* Textured Dotted Sketchbook & Soft Watercolor Wash Layer */}
       <div className="sketchbook-bg" aria-hidden="true" />
 
@@ -91,13 +91,13 @@ export default function App() {
               />
             ) : (
               <div className="max-w-2xl mx-auto px-4 py-12 text-center">
-                <div className="p-6 rounded-2xl bg-[#FFF0C5] border-2 border-[#193826] ink-shadow">
-                  <h2 className="font-serif text-xl font-bold mb-2">
+                <div className="p-6 rounded-2xl bg-[#FFF0C5] dark:bg-[#15211B] border-2 border-[#193826] dark:border-[#3F6B57] ink-shadow">
+                  <h2 className="font-serif text-xl font-bold mb-2 dark:text-[#F1F6F2]">
                     {recipeResult.incompatibilityReason || 'Recipe not available for this configuration'}
                   </h2>
                   <button
                     onClick={() => handleStepNavigation(2)}
-                    className="mt-4 px-6 py-2.5 rounded-xl bg-[#FF7B25] text-white font-bold ink-button cursor-pointer"
+                    className="mt-4 px-6 py-2.5 rounded-xl bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] font-bold ink-button cursor-pointer"
                   >
                     Return to Build Dish
                   </button>

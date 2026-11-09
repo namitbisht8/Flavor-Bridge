@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-serif: "Domine", Georgia, serif;
   --font-sans: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -80,7 +82,7 @@
 }
 
 /* ========================================================
-   DARK MODE PALETTE AND SKETCHBOOK STYLING
+   DARK MODE: "NIGHT GARDEN" PALETTE AND STYLING
    ======================================================== */
 
 .dark {
@@ -88,220 +90,46 @@
 }
 
 .dark body {
-  background-color: #0F1A15;
-  color: #EAF3EC;
+  background-color: #0C1411;
+  color: #F1F6F2;
 }
 
-/* Dark mode texture: light-green dots (#7FB59A at 14% opacity) and dimmer corner washes (12-15% opacity) */
+/* Page background: #0C1411 with ONE very soft radial glow of #153327 at 12% opacity near top center.
+   Remove colored corner washes completely. Dot texture: dots #8FC3A8 at 10% opacity. */
 .dark .sketchbook-bg {
-  background-color: #0F1A15;
+  background-color: #0C1411;
   background-image:
-    radial-gradient(circle at 0% 0%, rgba(127, 181, 154, 0.14) 0%, transparent 38%),
-    radial-gradient(circle at 100% 0%, rgba(255, 184, 148, 0.12) 0%, transparent 38%),
-    radial-gradient(circle at 0% 100%, rgba(255, 230, 160, 0.12) 0%, transparent 38%),
-    radial-gradient(circle, rgba(127, 181, 154, 0.14) 1.2px, transparent 1.2px);
+    radial-gradient(circle at 50% 0%, rgba(21, 51, 39, 0.12) 0%, transparent 60%),
+    radial-gradient(circle, rgba(143, 195, 168, 0.10) 1.2px, transparent 1.2px);
+  background-size: 100% 100%, 22px 22px;
+  background-repeat: no-repeat, repeat;
 }
 
-/* Dark mode borders: soft light green #7FB59A (hand-inked outline look kept) */
+/* Shadow and button adjustments in dark mode */
 .dark .ink-border,
-.dark .ink-border-thick,
-.dark .border-\[\#193826\],
-.dark .border-\[\#193826\]\/40,
-.dark .border-\[\#193826\]\/30,
-.dark .border-\[\#193826\]\/20,
-.dark .border-\[\#193826\]\/15,
-.dark .border-\[\#193826\]\/10 {
-  border-color: #7FB59A !important;
+.dark .ink-border-thick {
+  border-color: #3F6B57;
 }
 
-/* Dark mode offset shadows: black at about 40% opacity */
 .dark .ink-shadow {
-  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.45) !important;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.45);
 }
 
 .dark .ink-shadow-sm {
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.45) !important;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.45);
 }
 
 .dark .ink-shadow-lg {
-  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.55) !important;
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.55);
 }
 
 .dark .ink-button {
-  border-color: #7FB59A !important;
-  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.45) !important;
+  border-color: #3F6B57;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.45);
 }
 
 .dark .ink-button:hover:not(:disabled) {
-  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.55) !important;
-}
-
-/* Dark mode typography: main text #EAF3EC, secondary text #A9BFB3 */
-.dark .text-\[\#193826\] {
-  color: #EAF3EC !important;
-}
-
-.dark .text-\[\#193826\]\/85,
-.dark .text-\[\#193826\]\/80,
-.dark .text-\[\#193826\]\/75,
-.dark .text-\[\#193826\]\/70,
-.dark .text-\[\#193826\]\/60 {
-  color: #A9BFB3 !important;
-}
-
-/* Cards, header, and surfaces in dark mode: #16241D */
-.dark header,
-.dark footer,
-.dark .bg-\[\#FFFDF9\],
-.dark .bg-white {
-  background-color: #16241D !important;
-  color: #EAF3EC !important;
-}
-
-.dark .bg-\[\#FAF7F2\] {
-  background-color: #121E17 !important;
-  color: #EAF3EC !important;
-}
-
-/* Dark mode top micro-banner */
-.dark .bg-\[\#193826\] {
-  background-color: #101A14 !important;
-  color: #EAF3EC !important;
-  border-color: #7FB59A !important;
-}
-
-/* Pastel cards become muted dark tints:
-   mint #1E3A2D, butter #3A3320, peach #3D2A22, sky #1F3140 */
-.dark .bg-\[\#D8EFDF\] {
-  background-color: #1E3A2D !important;
-  color: #EAF3EC !important;
-  border-color: #7FB59A !important;
-}
-
-.dark .bg-\[\#FFF0C5\] {
-  background-color: #3A3320 !important;
-  color: #EAF3EC !important;
-  border-color: #7FB59A !important;
-}
-
-.dark .bg-\[\#FFE0CE\] {
-  background-color: #3D2A22 !important;
-  color: #EAF3EC !important;
-  border-color: #7FB59A !important;
-}
-
-.dark .bg-\[\#D6E8F4\] {
-  background-color: #1F3140 !important;
-  color: #EAF3EC !important;
-  border-color: #7FB59A !important;
-}
-
-/* Semi-transparent tint variations */
-.dark .bg-\[\#D8EFDF\]\/40,
-.dark .bg-\[\#D8EFDF\]\/50 {
-  background-color: rgba(30, 58, 45, 0.75) !important;
-}
-
-.dark .bg-\[\#FFE0CE\]\/40,
-.dark .bg-\[\#FFE0CE\]\/60 {
-  background-color: rgba(61, 42, 34, 0.75) !important;
-}
-
-.dark .bg-\[\#FFF0C5\]\/40,
-.dark .bg-\[\#FFF0C5\]\/60 {
-  background-color: rgba(58, 51, 32, 0.75) !important;
-}
-
-/* Saffron/orange buttons and highlights stay bright (#FFB34D or #FF8A3D) with dark text for contrast */
-.dark .bg-\[\#FF7B25\] {
-  background-color: #FFB34D !important;
-  color: #0F1A15 !important;
-  border-color: #7FB59A !important;
-}
-
-.dark .bg-\[\#FF7B25\]:hover:not(:disabled) {
-  background-color: #FFA534 !important;
-}
-
-.dark .text-\[\#FF7B25\] {
-  color: #FFB34D !important;
-}
-
-/* Inputs, textboxes, and selects in dark mode */
-.dark input[type="text"],
-.dark input[type="file"],
-.dark select {
-  background-color: #121E17 !important;
-  color: #EAF3EC !important;
-  border-color: #7FB59A !important;
-}
-
-.dark input::placeholder {
-  color: #7C998B !important;
-}
-
-/* Before vs After Card in Dark Mode */
-.dark .divide-\[\#193826\] {
-  border-color: #7FB59A !important;
-}
-
-.dark .bg-red-50 {
-  background-color: #341717 !important;
-  border-color: #FF7B7B !important;
-  color: #FFD5D5 !important;
-}
-
-.dark .bg-red-100 {
-  background-color: #421C1C !important;
-  border-color: #FF7B7B !important;
-  color: #FFD5D5 !important;
-}
-
-.dark .text-red-700,
-.dark .text-red-800,
-.dark .text-red-900,
-.dark .text-red-950 {
-  color: #FFA3A3 !important;
-}
-
-.dark .border-red-300,
-.dark .border-red-400,
-.dark .border-red-500 {
-  border-color: #FF7B7B !important;
-}
-
-.dark .bg-red-500,
-.dark .bg-red-600 {
-  background-color: #E64343 !important;
-  color: #FFFFFF !important;
-}
-
-.dark .text-emerald-700,
-.dark .text-emerald-800,
-.dark .text-emerald-900 {
-  color: #92E8C0 !important;
-}
-
-.dark .border-emerald-400,
-.dark .border-emerald-600,
-.dark .border-emerald-700 {
-  border-color: #7FB59A !important;
-}
-
-.dark .bg-emerald-500 {
-  background-color: #3EAF76 !important;
-}
-
-.dark .bg-emerald-100 {
-  background-color: #132E22 !important;
-}
-
-/* FlavorBot assistant and dialogs in dark mode */
-.dark dialog,
-.dark [role="dialog"] {
-  background-color: #16241D !important;
-  color: #EAF3EC !important;
-  border-color: #7FB59A !important;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.55);
 }
 
 /* Print styles for Recipe Guide */

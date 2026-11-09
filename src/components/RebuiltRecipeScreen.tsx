@@ -173,8 +173,8 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
     <div className="max-w-4xl mx-auto px-4 py-6 md:py-10">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 bg-[#193826] text-white px-4 py-2.5 rounded-xl border-2 border-[#FAF7F2] ink-shadow text-xs sm:text-sm font-bold flex items-center gap-2 animate-bounce">
-          <CheckCircle2 className="w-4 h-4 text-[#D8EFDF]" />
+        <div className="fixed top-20 right-4 z-50 bg-[#193826] text-white dark:bg-[#1B2A23] dark:border-[1.5px] dark:border-[#3F6B57] dark:text-[#F1F6F2] px-4 py-2.5 rounded-xl border-2 border-[#FAF7F2] ink-shadow text-xs sm:text-sm font-bold flex items-center gap-2 animate-bounce">
+          <CheckCircle2 className="w-4 h-4 text-[#D8EFDF] dark:text-[#5FD39A]" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -183,16 +183,16 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 no-print">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#D8EFDF] border border-[#193826] text-[#193826]">
-              <Sparkles className="w-3.5 h-3.5 text-[#FF7B25]" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#D8EFDF] dark:bg-[#1B2A23] border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] text-[#193826] dark:text-[#BBCDC2]">
+              <Sparkles className="w-3.5 h-3.5 text-[#FF7B25] dark:text-[#FFB34D]" />
               <span>Step 3: Rebuilt Recipe</span>
             </span>
             <SampleBadge />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#193826] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#193826] dark:text-[#F1F6F2] tracking-tight">
             {recipe.dishName} (Rebuilt)
           </h1>
-          <p className="text-sm text-[#193826]/80 mt-1">
+          <p className="text-sm text-[#193826]/80 dark:text-[#BBCDC2] mt-1">
             {recipe.tagline}
           </p>
         </div>
@@ -200,14 +200,14 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
         <div className="flex items-center gap-2 self-start sm:self-center">
           <button
             onClick={onBackToBuild}
-            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] bg-[#FFFDF9] hover:bg-[#FFE0CE] text-[#193826] transition-colors cursor-pointer flex items-center gap-1.5"
+            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#FFE0CE] dark:hover:border-[#5FD39A]/60 text-[#193826] dark:text-[#BBCDC2] transition-colors cursor-pointer flex items-center gap-1.5"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Customize</span>
           </button>
           <button
             onClick={onBackToDiet}
-            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] bg-[#FFFDF9] hover:bg-[#D6E8F4] text-[#193826] transition-colors cursor-pointer"
+            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#D6E8F4] dark:hover:border-[#5FD39A]/60 text-[#193826] dark:text-[#BBCDC2] transition-colors cursor-pointer"
           >
             Diet Profile
           </button>
@@ -222,31 +222,31 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
 
       {/* Red Sodium Limit Warning Banner if salt kept */}
       {recipe.isSodiumOverLimit && (
-        <div className="mb-6 p-4 rounded-2xl bg-red-50 border-2 border-red-500 text-red-950 ink-shadow flex items-start gap-3 animate-in fade-in duration-200">
-          <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+        <div className="mb-6 p-4 rounded-2xl bg-red-50 dark:bg-[#241618] border-2 border-red-500 dark:border-[1.5px] dark:border-[#FF8A80] text-red-950 dark:text-[#FF8A80] ink-shadow flex items-start gap-3 animate-in fade-in duration-200">
+          <div className="w-9 h-9 rounded-xl bg-red-600 dark:bg-[#FF8A80] text-white dark:text-[#1A1200] flex items-center justify-center shrink-0 mt-0.5">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2 mb-0.5">
-              <span className="font-serif font-bold text-base text-red-900">
+              <span className="font-serif font-bold text-base text-red-900 dark:text-[#FF8A80]">
                 {recipe.sodiumWarning || 'Over your 350 mg limit'}
               </span>
-              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-200 text-red-900 border border-red-300">
+              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-200 dark:bg-[#34171A] text-red-900 dark:text-[#FF8A80] border border-red-300 dark:border-[#FF8A80]/40">
                 Sample estimate
               </span>
             </div>
-            <p className="text-xs text-red-800 leading-relaxed font-medium">
-              Because original refined table salt was kept (+520 mg sodium sample estimate), the total rebuilt sodium reaches <strong>{recipe.rebuiltSodiumMg} mg</strong> ({recipe.sodiumLimitPercentage}% of your {recipe.limitSodiumMg} mg limit). To stay under limit, toggle &quot;Refined table salt&quot; back on in Step 2.
+            <p className="text-xs text-red-800 dark:text-[#BBCDC2] leading-relaxed font-medium">
+              Because original refined table salt was kept (+520 mg sodium sample estimate), the total rebuilt sodium reaches <strong className="text-red-900 dark:text-[#F1F6F2]">{recipe.rebuiltSodiumMg} mg</strong> ({recipe.sodiumLimitPercentage}% of your {recipe.limitSodiumMg} mg limit). To stay under limit, toggle &quot;Refined table salt&quot; back on in Step 2.
             </p>
           </div>
         </div>
       )}
 
       {/* BEFORE VS AFTER CARD */}
-      <div className="mb-6 rounded-2xl border-2 border-[#193826] bg-[#FFFDF9] ink-shadow overflow-hidden">
-        <div className="p-4 sm:p-5 bg-[#193826] text-[#FAF7F2] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="mb-6 rounded-2xl border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow overflow-hidden">
+        <div className="p-4 sm:p-5 bg-[#193826] dark:bg-[#101A14] dark:border-b dark:border-[#3F6B57] text-[#FAF7F2] dark:text-[#F1F6F2] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <span className="text-[11px] uppercase tracking-wider font-bold text-[#FF7B25] block">
+            <span className="text-[11px] uppercase tracking-wider font-bold text-[#FF7B25] dark:text-[#FFB34D] block">
               Aroma Match Rebuild
             </span>
             <h2 className="font-serif text-xl sm:text-2xl font-bold">
@@ -255,72 +255,72 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
             {/* Requirement 4: Show "94% Flavor Match (sample)" until live data is connected */}
-            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[#D8EFDF] text-[#193826] border border-white">
+            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[#D8EFDF] text-[#193826] dark:bg-[#1B2A23] dark:text-[#5FD39A] border border-white dark:border-[#3F6B57]">
               {recipe.flavorMatchLabel}
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x-2 divide-[#193826]">
-          {/* Before Column */}
-          <div className="p-4 sm:p-5 bg-[#FFE0CE]/40">
+        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x-2 divide-[#193826] dark:divide-[#3F6B57]">
+          {/* Before Column (Traditional side = #241618 background with #FF8A80 accent & red bar) */}
+          <div className="p-4 sm:p-5 bg-[#FFE0CE]/40 dark:bg-[#241618]">
             <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 mb-3">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-red-900 bg-red-100 px-2.5 py-0.5 rounded-md border border-red-300">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-red-900 bg-red-100 dark:bg-[#34171A] dark:text-[#FF8A80] px-2.5 py-0.5 rounded-md border border-red-300 dark:border-[#FF8A80]/40">
                 Traditional Recipe
               </span>
-              <span className="text-xs font-bold text-red-800">
+              <span className="text-xs font-bold text-red-800 dark:text-[#FF8A80]">
                 {recipe.sodiumLimitComparison}
               </span>
             </div>
 
             <div className="space-y-3">
               <div>
-                <div className="flex justify-between text-xs font-bold text-[#193826] mb-1">
+                <div className="flex justify-between text-xs font-bold text-[#193826] dark:text-[#F1F6F2] mb-1">
                   <span>Sodium Content (Sample estimate)</span>
-                  <span className="text-red-700 text-sm font-extrabold">{recipe.originalSodiumMg} mg</span>
+                  <span className="text-red-700 dark:text-[#FF8A80] text-sm font-extrabold">{recipe.originalSodiumMg} mg</span>
                 </div>
-                <div className="w-full h-3 bg-red-100 rounded-full border border-red-300 overflow-hidden">
-                  <div className="h-full bg-red-500 rounded-full" style={{ width: '100%' }} />
+                <div className="w-full h-3 bg-red-100 dark:bg-[#34171A] rounded-full border border-red-300 dark:border-[#FF8A80]/30 overflow-hidden">
+                  <div className="h-full bg-red-500 dark:bg-[#FF8A80] rounded-full" style={{ width: '100%' }} />
                 </div>
-                <span className="text-[11px] text-red-700 font-medium mt-0.5 block">
+                <span className="text-[11px] text-red-700 dark:text-[#FF8A80] font-medium mt-0.5 block">
                   Original recipe exceeds normal target limit ({recipe.limitSodiumMg} mg)
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#193826]/10 text-xs">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#193826]/10 dark:border-[#3F6B57]/30 text-xs">
                 <div>
-                  <span className="text-[#193826]/70 block font-semibold">Saturated Fat</span>
-                  <span className="font-bold text-[#193826] text-sm">{recipe.originalSatFatG} g</span>
+                  <span className="text-[#193826]/70 dark:text-[#8FA89A] block font-semibold">Saturated Fat</span>
+                  <span className="font-bold text-[#193826] dark:text-[#F1F6F2] text-sm">{recipe.originalSatFatG} g</span>
                 </div>
                 <div>
-                  <span className="text-[#193826]/70 block font-semibold">Added Sugar</span>
-                  <span className="font-bold text-[#193826] text-sm">{recipe.originalAddedSugarG.toFixed(1)} g</span>
+                  <span className="text-[#193826]/70 dark:text-[#8FA89A] block font-semibold">Added Sugar</span>
+                  <span className="font-bold text-[#193826] dark:text-[#F1F6F2] text-sm">{recipe.originalAddedSugarG.toFixed(1)} g</span>
                 </div>
               </div>
 
-              <div className="text-[11px] text-[#193826]/70 font-medium">
+              <div className="text-[11px] text-[#193826]/70 dark:text-[#8FA89A] font-medium">
                 Ingredients: Salted dairy butter, heavy cream, refined table salt, refined white sugar.
               </div>
             </div>
           </div>
 
-          {/* After Column */}
-          <div className="p-4 sm:p-5 bg-[#D8EFDF]/40">
+          {/* After Column (Rebuilt side = #12281F background with #5FD39A accent & green bar) */}
+          <div className="p-4 sm:p-5 bg-[#D8EFDF]/40 dark:bg-[#12281F]">
             <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 mb-3">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-900 bg-[#D8EFDF] px-2.5 py-0.5 rounded-md border border-emerald-600">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-900 bg-[#D8EFDF] dark:bg-[#17382B] dark:text-[#5FD39A] px-2.5 py-0.5 rounded-md border border-emerald-600 dark:border-[#5FD39A]/40">
                 Flavor Bridge Rebuilt
               </span>
-              <span className="text-xs font-bold text-emerald-800">
+              <span className="text-xs font-bold text-emerald-800 dark:text-[#5FD39A]">
                 {PLATFORM_STATS.scienceNotice} (sample estimates)
               </span>
             </div>
 
             <div className="space-y-3">
               <div>
-                <div className="flex justify-between text-xs font-bold text-[#193826] mb-1">
+                <div className="flex justify-between text-xs font-bold text-[#193826] dark:text-[#F1F6F2] mb-1">
                   <span>Sodium (Target Limit: {recipe.limitSodiumMg} mg)</span>
                   <span className={`text-sm font-extrabold flex items-center gap-1.5 ${
-                    recipe.isSodiumOverLimit ? 'text-red-700' : 'text-emerald-800'
+                    recipe.isSodiumOverLimit ? 'text-red-700 dark:text-[#FF8A80]' : 'text-emerald-800 dark:text-[#5FD39A]'
                   }`}>
                     {recipe.rebuiltSodiumMg} mg
                     <span className="text-xs font-semibold">({recipe.sodiumLimitPercentage}%)</span>
@@ -329,50 +329,50 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
 
                 {/* Sodium bar strictly reflecting calculated sodium relative to 350 mg limit */}
                 <div className={`relative w-full h-3 rounded-full border overflow-hidden ${
-                  recipe.isSodiumOverLimit ? 'bg-red-100 border-red-400' : 'bg-emerald-100 border-emerald-400'
+                  recipe.isSodiumOverLimit ? 'bg-red-100 dark:bg-[#34171A] border-red-400 dark:border-[#FF8A80]/40' : 'bg-emerald-100 dark:bg-[#17382B] border-emerald-400 dark:border-[#5FD39A]/40'
                 }`}>
                   <div
                     className={`h-full rounded-full transition-all duration-700 ${
-                      recipe.isSodiumOverLimit ? 'bg-red-600' : 'bg-emerald-500'
+                      recipe.isSodiumOverLimit ? 'bg-red-600 dark:bg-[#FF8A80]' : 'bg-emerald-500 dark:bg-[#5FD39A]'
                     }`}
                     style={{ width: `${Math.min(100, recipe.sodiumLimitPercentage)}%` }}
                   />
                 </div>
 
                 <div className="flex justify-between text-[11px] font-semibold mt-0.5">
-                  <span className={recipe.isSodiumOverLimit ? 'text-red-800 font-bold' : 'text-emerald-800'}>
+                  <span className={recipe.isSodiumOverLimit ? 'text-red-800 dark:text-[#FF8A80] font-bold' : 'text-emerald-800 dark:text-[#5FD39A]'}>
                     {recipe.rebuiltSodiumMg} mg / {recipe.limitSodiumMg} mg limit
                   </span>
                   {recipe.isSodiumOverLimit ? (
-                    <span className="text-red-700 font-bold uppercase tracking-wider">
+                    <span className="text-red-700 dark:text-[#FF8A80] font-bold uppercase tracking-wider">
                       Over your 350 mg limit
                     </span>
                   ) : (
-                    <span className="text-emerald-800">
+                    <span className="text-emerald-800 dark:text-[#5FD39A]">
                       Safe room: {recipe.limitSodiumMg - recipe.rebuiltSodiumMg} mg
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#193826]/10 text-xs">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#193826]/10 dark:border-[#3F6B57]/30 text-xs">
                 <div>
-                  <span className="text-[#193826]/70 block font-semibold">Saturated Fat</span>
-                  <span className="font-bold text-emerald-800 text-sm">
+                  <span className="text-[#193826]/70 dark:text-[#8FA89A] block font-semibold">Saturated Fat</span>
+                  <span className="font-bold text-emerald-800 dark:text-[#5FD39A] text-sm">
                     {recipe.rebuiltSatFatG} g{' '}
                     {recipe.satFatReductionPercent > 0 && (
-                      <span className="text-[10px] text-emerald-700 font-extrabold">
+                      <span className="text-[10px] text-emerald-700 dark:text-[#8FE3B6] font-extrabold">
                         (-{recipe.satFatReductionPercent}%)
                       </span>
                     )}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[#193826]/70 block font-semibold">Added Sugar</span>
-                  <span className="font-bold text-emerald-800 text-sm">
+                  <span className="text-[#193826]/70 dark:text-[#8FA89A] block font-semibold">Added Sugar</span>
+                  <span className="font-bold text-emerald-800 dark:text-[#5FD39A] text-sm">
                     {recipe.rebuiltAddedSugarG.toFixed(1)} g{' '}
                     {recipe.rebuiltAddedSugarG < recipe.originalAddedSugarG && (
-                      <span className="text-[10px] text-emerald-700 font-extrabold">
+                      <span className="text-[10px] text-emerald-700 dark:text-[#8FE3B6] font-extrabold">
                         (-{Math.round(((recipe.originalAddedSugarG - recipe.rebuiltAddedSugarG) / recipe.originalAddedSugarG) * 100)}%)
                       </span>
                     )}
@@ -380,7 +380,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                 </div>
               </div>
 
-              <div className="text-[11px] text-[#193826]/80 font-medium">
+              <div className="text-[11px] text-[#193826]/80 dark:text-[#BBCDC2] font-medium">
                 {recipe.rebuiltIngredients.includes('Refined table salt')
                   ? 'Rebuilt with roasted cumin + amchur. '
                   : 'Table salt kept. '}
@@ -393,57 +393,57 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
         </div>
 
         {recipe.keptIngredients.length > 0 && (
-          <div className="p-3 bg-[#FFF0C5] border-t-2 border-[#193826] text-xs font-semibold text-[#193826] flex items-center gap-2">
-            <Info className="w-4 h-4 text-[#FF7B25] shrink-0" />
+          <div className="p-3 bg-[#FFF0C5] dark:bg-[#1B2A23] border-t-2 border-[#193826] dark:border-t-[1.5px] dark:border-[#3F6B57] text-xs font-semibold text-[#193826] dark:text-[#BBCDC2] flex items-center gap-2">
+            <Info className="w-4 h-4 text-[#FF7B25] dark:text-[#FFB34D] shrink-0" />
             <span>
-              <strong>Sample estimates applied for kept ingredients:</strong> {recipe.keptIngredients.join(', ')} retained original formulation.
+              <strong className="text-[#193826] dark:text-[#F1F6F2]">Sample estimates applied for kept ingredients:</strong> {recipe.keptIngredients.join(', ')} retained original formulation.
             </span>
           </div>
         )}
       </div>
 
-      {/* QUICK STATS ROW: ALL THREE CARDS CORRECT */}
+      {/* QUICK STATS ROW: SAME CARD SURFACE (#15211B), COLORED ICON CHIP, 3PX COLORED TOP BORDER */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-        {/* Card 1: Estimated Cost */}
-        <div className="p-4 rounded-xl border-2 border-[#193826] bg-[#FFF0C5] ink-shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white border border-[#193826] flex items-center justify-center shrink-0">
-            <Wallet className="w-5 h-5 text-[#FF7B25]" />
+        {/* Card 1: Estimated Cost (saffron top border) */}
+        <div className="p-4 rounded-xl border-2 border-[#193826] bg-[#FFF0C5] dark:bg-[#15211B] dark:border-[1.5px] dark:border-[#3F6B57] dark:border-t-[3px] dark:border-t-[#FFB34D] ink-shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-white dark:bg-[#22332A] border border-[#193826] dark:border-[#3F6B57] flex items-center justify-center shrink-0">
+            <Wallet className="w-5 h-5 text-[#FF7B25] dark:text-[#FFB34D]" />
           </div>
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 block">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 dark:text-[#8FA89A] block">
               Estimated Cost
             </span>
-            <span className="font-serif text-lg font-bold text-[#193826] block leading-tight">
+            <span className="font-serif text-lg font-bold text-[#193826] dark:text-[#F1F6F2] block leading-tight">
               Rs {recipe.costPerServing} / serving
             </span>
           </div>
         </div>
 
-        {/* Card 2: Difficulty */}
-        <div className="p-4 rounded-xl border-2 border-[#193826] bg-[#D8EFDF] ink-shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white border border-[#193826] flex items-center justify-center shrink-0">
-            <Gauge className="w-5 h-5 text-emerald-700" />
+        {/* Card 2: Difficulty (mint top border) */}
+        <div className="p-4 rounded-xl border-2 border-[#193826] bg-[#D8EFDF] dark:bg-[#15211B] dark:border-[1.5px] dark:border-[#3F6B57] dark:border-t-[3px] dark:border-t-[#5FD39A] ink-shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-white dark:bg-[#22332A] border border-[#193826] dark:border-[#3F6B57] flex items-center justify-center shrink-0">
+            <Gauge className="w-5 h-5 text-emerald-700 dark:text-[#5FD39A]" />
           </div>
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 block">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 dark:text-[#8FA89A] block">
               Difficulty
             </span>
-            <span className="font-serif text-lg font-bold text-[#193826] block leading-tight">
+            <span className="font-serif text-lg font-bold text-[#193826] dark:text-[#F1F6F2] block leading-tight">
               {recipe.difficulty}
             </span>
           </div>
         </div>
 
-        {/* Card 3: Estimated Time */}
-        <div className="p-4 rounded-xl border-2 border-[#193826] bg-[#D6E8F4] ink-shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white border border-[#193826] flex items-center justify-center shrink-0">
-            <Clock className="w-5 h-5 text-sky-800" />
+        {/* Card 3: Estimated Time (sky top border #7CC4F0) */}
+        <div className="p-4 rounded-xl border-2 border-[#193826] bg-[#D6E8F4] dark:bg-[#15211B] dark:border-[1.5px] dark:border-[#3F6B57] dark:border-t-[3px] dark:border-t-[#7CC4F0] ink-shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-white dark:bg-[#22332A] border border-[#193826] dark:border-[#3F6B57] flex items-center justify-center shrink-0">
+            <Clock className="w-5 h-5 text-sky-800 dark:text-[#7CC4F0]" />
           </div>
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 block">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 dark:text-[#8FA89A] block">
               Estimated Time
             </span>
-            <span className="font-serif text-lg font-bold text-[#193826] block leading-tight">
+            <span className="font-serif text-lg font-bold text-[#193826] dark:text-[#F1F6F2] block leading-tight">
               {recipe.estimatedTimeMins} mins
             </span>
           </div>
@@ -451,14 +451,14 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
       </div>
 
       {/* SMELL-TWIN SWAPS */}
-      <div className="mb-6 p-5 sm:p-6 rounded-2xl border-2 border-[#193826] bg-[#FFFDF9] ink-shadow">
+      <div className="mb-6 p-5 sm:p-6 rounded-2xl border-2 border-[#193826] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow">
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-5 h-5 text-[#FF7B25]" />
-          <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#193826]">
+          <Sparkles className="w-5 h-5 text-[#FF7B25] dark:text-[#FFB34D]" />
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#193826] dark:text-[#F1F6F2]">
             Smell-Twin Aroma Swaps
           </h2>
         </div>
-        <p className="text-xs sm:text-sm text-[#193826]/80 mb-4 font-medium">
+        <p className="text-xs sm:text-sm text-[#193826]/80 dark:text-[#BBCDC2] mb-4 font-medium">
           Culinary aroma science matches volatilized flavor twins so your palate experiences traditional indulgence without high sodium or saturated fat.
         </p>
 
@@ -468,21 +468,21 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
             return (
               <div
                 key={swap.id}
-                className="rounded-xl border-2 border-[#193826] bg-[#FAF7F2] overflow-hidden transition-all"
+                className="rounded-xl border-2 border-[#193826] dark:border-[#3F6B57] bg-[#FAF7F2] dark:bg-[#1B2A23] overflow-hidden transition-all"
               >
                 <div
                   onClick={() => toggleSwapExpand(swap.id)}
-                  className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#FFF0C5]/40 transition-colors"
+                  className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#FFF0C5]/40 dark:hover:bg-[#22332A] transition-colors"
                 >
-                  <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-[#193826]">
-                    <span className="line-through text-red-700 bg-red-100 px-2 py-0.5 rounded border border-red-300">
+                  <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-[#193826] dark:text-[#F1F6F2]">
+                    <span className="line-through text-red-700 dark:text-[#FF8A80] bg-red-100 dark:bg-[#241618] px-2 py-0.5 rounded border border-red-300 dark:border-red-900/60">
                       {swap.originalIngredient}
                     </span>
-                    <span className="text-xs text-[#193826]/50">swapped with</span>
+                    <span className="text-xs text-[#193826]/50 dark:text-[#8FA89A]">swapped with</span>
                     <span className={`px-2.5 py-0.5 rounded border ${
                       swap.isRebuilt !== false
-                        ? 'text-emerald-800 bg-[#D8EFDF] border-emerald-600'
-                        : 'text-amber-900 bg-[#FFF0C5] border-amber-600'
+                        ? 'text-emerald-800 dark:text-[#5FD39A] bg-[#D8EFDF] dark:bg-[#12281F] border-emerald-600 dark:border-[#5FD39A]/40'
+                        : 'text-amber-900 dark:text-[#FFC857] bg-[#FFF0C5] dark:bg-[#3A3320] border-amber-600 dark:border-[#FFC857]/40'
                     }`}>
                       {swap.rebuiltIngredient}
                     </span>
@@ -490,7 +490,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
 
                   <button
                     type="button"
-                    className="self-end sm:self-center text-xs font-bold text-[#193826] flex items-center gap-1 hover:text-[#FF7B25]"
+                    className="self-end sm:self-center text-xs font-bold text-[#193826] dark:text-[#BBCDC2] flex items-center gap-1 hover:text-[#FF7B25] dark:hover:text-[#FFB34D]"
                   >
                     <span>{isExpanded ? 'Hide why this works' : 'Why this works'}</span>
                     {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -498,10 +498,10 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                 </div>
 
                 {isExpanded && (
-                  <div className="px-4 pb-4 pt-1 bg-white border-t border-[#193826]/20">
-                    <div className="p-3 rounded-lg bg-[#FFF0C5]/60 border border-[#193826]/30 text-xs text-[#193826] leading-relaxed">
+                  <div className="px-4 pb-4 pt-1 bg-white dark:bg-[#15211B] border-t border-[#193826]/20 dark:border-[#3F6B57]/50">
+                    <div className="p-3 rounded-lg bg-[#FFF0C5]/60 dark:bg-[#101A15] border border-[#193826]/30 dark:border-[#3F6B57] text-xs text-[#193826] dark:text-[#BBCDC2] leading-relaxed">
                       {/* Requirement 3: Label each Aroma Twin Explanation as Sample explanation */}
-                      <strong className="block text-[#FF7B25] mb-1 uppercase tracking-wider text-[10px] font-extrabold">
+                      <strong className="block text-[#FF7B25] dark:text-[#FFB34D] mb-1 uppercase tracking-wider text-[10px] font-extrabold">
                         Sample explanation
                       </strong>
                       <p>{swap.whyThisWorks}</p>
@@ -515,13 +515,13 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
       </div>
 
       {/* 3 COOKING STEPS WITH TIMES */}
-      <div className="mb-6 p-5 sm:p-6 rounded-2xl border-2 border-[#193826] bg-[#FFFDF9] ink-shadow">
+      <div className="mb-6 p-5 sm:p-6 rounded-2xl border-2 border-[#193826] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#193826]">
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#193826] dark:text-[#F1F6F2]">
               Cooking Steps ({recipe.cookingSteps.length} Steps • {recipe.estimatedTimeMins} mins)
             </h2>
-            <p className="text-xs text-[#193826]/75">
+            <p className="text-xs text-[#193826]/75 dark:text-[#BBCDC2]">
               Click checkboxes as you complete each phase.
             </p>
           </div>
@@ -530,12 +530,12 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
           <div className="flex items-center gap-2 no-print">
             <button
               onClick={handleReadAloudToggle}
-              className={`px-3 py-1.5 rounded-lg border-2 border-[#193826] text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg border-2 border-[#193826] dark:border-[#3F6B57] text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 isSpeaking
                   ? isPaused
-                    ? 'bg-[#FFF0C5] text-[#193826]'
-                    : 'bg-[#FF7B25] text-white animate-pulse'
-                  : 'bg-[#D6E8F4] text-[#193826] hover:bg-[#bce0f8]'
+                    ? 'bg-[#FFF0C5] dark:bg-[#1B2A23] text-[#193826] dark:text-[#FFB34D]'
+                    : 'bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] animate-pulse'
+                  : 'bg-[#D6E8F4] dark:bg-[#1B2A23] text-[#193826] dark:text-[#7CC4F0] hover:bg-[#bce0f8] dark:hover:bg-[#22332A]'
               }`}
             >
               <Volume2 className="w-3.5 h-3.5" />
@@ -545,7 +545,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
               <button
                 onClick={handleStopSpeech}
                 title="Stop reading aloud"
-                className="p-1.5 rounded-lg border border-[#193826] bg-red-100 text-red-700 hover:bg-red-200 cursor-pointer"
+                className="p-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-red-100 dark:bg-[#241618] text-red-700 dark:text-[#FF8A80] hover:bg-red-200 dark:hover:bg-red-950 cursor-pointer"
               >
                 <VolumeX className="w-3.5 h-3.5" />
               </button>
@@ -560,16 +560,16 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
               <div
                 key={step.stepNumber}
                 onClick={() => toggleStepCompleted(step.stepNumber)}
-                className={`p-4 rounded-xl border-2 border-[#193826] transition-all cursor-pointer ${
+                className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
                   isDone
-                    ? 'bg-[#D8EFDF]/50 border-emerald-700 opacity-90'
-                    : 'bg-[#FAF7F2] hover:bg-white'
+                    ? 'bg-[#D8EFDF]/50 dark:bg-[#12281F] border-emerald-700 dark:border-[#5FD39A] opacity-90'
+                    : 'bg-[#FAF7F2] dark:bg-[#1B2A23] border-[#193826] dark:border-[#3F6B57] hover:bg-white dark:hover:bg-[#22332A]'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   <div
-                    className={`w-6 h-6 rounded-md border-2 border-[#193826] flex items-center justify-center shrink-0 mt-0.5 ${
-                      isDone ? 'bg-[#193826] text-white' : 'bg-white'
+                    className={`w-6 h-6 rounded-md border-2 border-[#193826] dark:border-[#3F6B57] flex items-center justify-center shrink-0 mt-0.5 ${
+                      isDone ? 'bg-[#193826] dark:bg-[#5FD39A] text-white dark:text-[#1A1200]' : 'bg-white dark:bg-[#101A15]'
                     }`}
                   >
                     {isDone ? <Check className="w-4 h-4 stroke-[3]" /> : null}
@@ -577,14 +577,14 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
 
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-serif text-sm font-bold text-[#193826]">
+                      <span className="font-serif text-sm font-bold text-[#193826] dark:text-[#F1F6F2]">
                         Step {step.stepNumber}
                       </span>
-                      <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FFF0C5] border border-[#193826] text-[#193826]">
+                      <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FFF0C5] dark:bg-[#101A15] border border-[#193826] dark:border-[#3F6B57] text-[#193826] dark:text-[#FFB34D]">
                         {step.timeMinutes} mins
                       </span>
                     </div>
-                    <p className={`text-xs sm:text-sm text-[#193826] leading-relaxed ${isDone ? 'line-through opacity-75' : ''}`}>
+                    <p className={`text-xs sm:text-sm text-[#193826] dark:text-[#BBCDC2] leading-relaxed ${isDone ? 'line-through opacity-75' : ''}`}>
                       {step.instruction}
                     </p>
                   </div>
@@ -596,38 +596,38 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
       </div>
 
       {/* SHOPPING LIST WITH LIVE ESTIMATED TOTAL AND AMAZON / FLIPKART LINKS */}
-      <div className="mb-6 p-5 sm:p-6 rounded-2xl border-2 border-[#193826] bg-[#FFFDF9] ink-shadow">
+      <div className="mb-6 p-5 sm:p-6 rounded-2xl border-2 border-[#193826] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
           <div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#193826]">
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#193826] dark:text-[#F1F6F2]">
               Rebuilt Shopping List
             </h2>
-            <p className="text-xs text-[#193826]/75">
+            <p className="text-xs text-[#193826]/75 dark:text-[#BBCDC2]">
               Items tailored to aroma replacements (prices based on average grocery basket).
             </p>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-[#FFF0C5] border-2 border-[#193826] text-right self-start sm:self-auto">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 block">
+          <div className="p-2.5 rounded-xl bg-[#FFF0C5] dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] text-right self-start sm:self-auto">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 dark:text-[#8FA89A] block">
               Estimated price
             </span>
-            <span className="font-serif text-xl font-bold text-[#193826]">
+            <span className="font-serif text-xl font-bold text-[#193826] dark:text-[#FFB34D]">
               ₹{shoppingListTotal}
             </span>
           </div>
         </div>
 
-        <div className="divide-y divide-[#193826]/20 border-2 border-[#193826] rounded-xl overflow-hidden bg-white">
+        <div className="divide-y divide-[#193826]/20 dark:divide-[#3F6B57] border-2 border-[#193826] dark:border-[#3F6B57] rounded-xl overflow-hidden bg-white dark:bg-[#101A15]">
           {recipe.shoppingList.map((item) => (
             <div
               key={item.id}
-              className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#FAF7F2] transition-colors"
+              className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#FAF7F2] dark:hover:bg-[#1B2A23] transition-colors"
             >
               <div>
-                <span className="font-bold text-sm text-[#193826] block">
+                <span className="font-bold text-sm text-[#193826] dark:text-[#F1F6F2] block">
                   {item.name}
                 </span>
-                <span className="text-xs text-[#193826]/70">
+                <span className="text-xs text-[#193826]/70 dark:text-[#BBCDC2]">
                   {item.quantity} • Estimated ₹{item.estimatedPrice}
                 </span>
               </div>
@@ -638,7 +638,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                   href={`https://www.amazon.in/s?k=${encodeURIComponent(item.searchQuery)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] bg-[#FFF0C5] hover:bg-[#ffe394] text-xs font-bold text-[#193826] flex items-center gap-1 transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#1B2A23] hover:bg-[#ffe394] dark:hover:bg-[#22332A] text-xs font-bold text-[#193826] dark:text-[#FFB34D] flex items-center gap-1 transition-colors cursor-pointer"
                 >
                   <span>Amazon</span>
                   <ExternalLink className="w-3 h-3" />
@@ -648,7 +648,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                   href={`https://www.flipkart.com/search?q=${encodeURIComponent(item.searchQuery)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] bg-[#D6E8F4] hover:bg-[#b5dbf7] text-xs font-bold text-[#193826] flex items-center gap-1 transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#D6E8F4] dark:bg-[#1B2A23] hover:bg-[#b5dbf7] dark:hover:bg-[#22332A] text-xs font-bold text-[#193826] dark:text-[#7CC4F0] flex items-center gap-1 transition-colors cursor-pointer"
                 >
                   <span>Flipkart</span>
                   <ExternalLink className="w-3 h-3" />
@@ -660,44 +660,46 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
       </div>
 
       {/* ACTION BUTTONS ROW */}
-      <div className="p-5 rounded-2xl bg-[#FFE0CE] border-2 border-[#193826] ink-shadow mb-8 no-print">
-        <h3 className="font-serif text-lg font-bold text-[#193826] mb-3">
+      <div className="p-5 rounded-2xl bg-[#FFE0CE] dark:bg-[#15211B] border-2 border-[#193826] dark:border-[#3F6B57] ink-shadow mb-8 no-print">
+        <h3 className="font-serif text-lg font-bold text-[#193826] dark:text-[#F1F6F2] mb-3">
           Recipe Actions &amp; Sharing
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <button
             type="button"
             onClick={handleShareWhatsApp}
-            className="p-3 rounded-xl bg-white border-2 border-[#193826] font-bold text-xs sm:text-sm text-[#193826] hover:bg-[#D8EFDF] transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
+            className="p-3 rounded-xl bg-white dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm text-[#193826] dark:text-[#5FD39A] hover:bg-[#D8EFDF] dark:hover:bg-[#22332A] transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
           >
-            <Share2 className="w-4 h-4 text-emerald-700" />
+            <Share2 className="w-4 h-4 text-emerald-700 dark:text-[#5FD39A]" />
             <span>Share on WhatsApp</span>
           </button>
 
           <button
             type="button"
             onClick={handleSaveRecipe}
-            className={`p-3 rounded-xl border-2 border-[#193826] font-bold text-xs sm:text-sm transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs ${
-              isSaved ? 'bg-[#D8EFDF] text-[#193826]' : 'bg-white text-[#193826] hover:bg-[#FFF0C5]'
+            className={`p-3 rounded-xl border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs ${
+              isSaved
+                ? 'bg-[#D8EFDF] dark:bg-[#12281F] text-[#193826] dark:text-[#5FD39A]'
+                : 'bg-white dark:bg-[#1B2A23] text-[#193826] dark:text-[#FFB34D] hover:bg-[#FFF0C5] dark:hover:bg-[#22332A]'
             }`}
           >
-            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#193826]' : 'text-[#FF7B25]'}`} />
+            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#193826] dark:text-[#5FD39A]' : 'text-[#FF7B25] dark:text-[#FFB34D]'}`} />
             <span>{isSaved ? 'Recipe Saved!' : 'Save Recipe'}</span>
           </button>
 
           <button
             type="button"
             onClick={handleReadAloudToggle}
-            className="p-3 rounded-xl bg-white border-2 border-[#193826] font-bold text-xs sm:text-sm text-[#193826] hover:bg-[#D6E8F4] transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
+            className="p-3 rounded-xl bg-white dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm text-[#193826] dark:text-[#7CC4F0] hover:bg-[#D6E8F4] dark:hover:bg-[#22332A] transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
           >
-            <Volume2 className="w-4 h-4 text-sky-800" />
+            <Volume2 className="w-4 h-4 text-sky-800 dark:text-[#7CC4F0]" />
             <span>{isSpeaking ? (isPaused ? 'Resume' : 'Pause') : 'Read aloud'}</span>
           </button>
 
           <button
             type="button"
             onClick={handlePrint}
-            className="p-3 rounded-xl bg-[#FF7B25] text-white border-2 border-[#193826] font-bold text-xs sm:text-sm ink-button cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
+            className="p-3 rounded-xl bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm ink-button cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
           >
             <Printer className="w-4 h-4" />
             <span>Print Recipe Guide</span>
@@ -706,8 +708,8 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
       </div>
 
       {/* Mandatory Content & Medical Rules Disclaimer */}
-      <div className="p-4 rounded-xl bg-[#FFFDF9] border border-[#193826]/40 text-center text-xs text-[#193826]/85 font-medium leading-relaxed">
-        <p className="font-bold text-[#193826] mb-0.5">
+      <div className="p-4 rounded-xl bg-[#FFFDF9] dark:bg-[#15211B] border border-[#193826]/40 dark:border-[#3F6B57] text-center text-xs text-[#193826]/85 dark:text-[#8FA89A] font-medium leading-relaxed">
+        <p className="font-bold text-[#193826] dark:text-[#BBCDC2] mb-0.5">
           {PLATFORM_STATS.scienceNotice}
         </p>
         <p>
