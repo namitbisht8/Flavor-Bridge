@@ -31,6 +31,7 @@ export interface SmellTwinSwap {
   aromaNotes: string;
   whyThisWorks: string;
   whyThisWorksNutAllergy?: string;
+  isRebuilt?: boolean;
 }
 
 export interface CookingStep {
@@ -59,6 +60,7 @@ export interface RebuiltRecipeData {
   dishName: string;
   tagline: string;
   flavorMatchPercent: number;
+  flavorMatchLabel: string; // "94% Flavor Match (sample)"
   costPerServing: number;
   difficulty: 'Easy' | 'Medium' | 'Advanced';
   estimatedTimeMins: number;
@@ -69,6 +71,8 @@ export interface RebuiltRecipeData {
   limitSodiumMg: number;
   sodiumLimitComparison: string; // "about 2.5x the limit"
   sodiumLimitPercentage: number; // 88%
+  isSodiumOverLimit: boolean;
+  sodiumWarning?: string; // "Over your 350 mg limit"
 
   // Saturated Fat
   originalSatFatG: number;
@@ -80,6 +84,8 @@ export interface RebuiltRecipeData {
   rebuiltAddedSugarG: number;
 
   originalIngredients: string[];
+  rebuiltIngredients: string[];
+  keptIngredients: string[];
   swaps: SmellTwinSwap[];
   cookingSteps: CookingStep[];
   shoppingList: ShoppingListItem[];
@@ -91,6 +97,66 @@ export const PLATFORM_STATS = {
   recipesCount: "118,171 recipes",
   scienceNotice: "Checked against the limit you set",
   medicalDisclaimer: "Food suggestions, not medical advice.",
+};
+
+export const CORE_INGREDIENTS = [
+  'Bone-in or boneless chicken',
+  'Tomato puree & whole tomatoes',
+  'Kasuri methi (fenugreek)',
+  'Ginger & garlic paste',
+];
+
+export const TOGGLEABLE_INGREDIENTS = [
+  'Refined table salt',
+  'Refined white sugar',
+  'Salted table butter & ghee',
+  'Heavy dairy cream',
+];
+
+export interface IngredientSamplePenalty {
+  ingredient: string;
+  keptSodiumPenaltyMg: number;
+  keptSugarPenaltyG: number;
+  keptSatFatPenaltyG: number;
+  description: string;
+}
+
+/**
+ * Sample estimates when an ingredient is toggled off (kept original)
+ * Salt kept: +520 mg sodium
+ * Sugar kept: +3 g sugar
+ * Butter and ghee kept: +9 g saturated fat
+ * Cream kept: +5 g saturated fat
+ */
+export const SAMPLE_INGREDIENT_PENALTIES: Record<string, IngredientSamplePenalty> = {
+  'Refined table salt': {
+    ingredient: 'Refined table salt',
+    keptSodiumPenaltyMg: 520,
+    keptSugarPenaltyG: 0,
+    keptSatFatPenaltyG: 0,
+    description: '+520 mg sodium (sample estimate)',
+  },
+  'Refined white sugar': {
+    ingredient: 'Refined white sugar',
+    keptSodiumPenaltyMg: 0,
+    keptSugarPenaltyG: 3.0,
+    keptSatFatPenaltyG: 0,
+    description: '+3 g sugar (sample estimate)',
+  },
+  'Salted table butter & ghee': {
+    ingredient: 'Salted table butter & ghee',
+    keptSodiumPenaltyMg: 0,
+    keptSugarPenaltyG: 0,
+    keptSatFatPenaltyG: 9.0,
+    description: '+9 g saturated fat (sample estimate)',
+  },
+  'Heavy dairy cream': {
+    ingredient: 'Heavy dairy cream',
+    keptSodiumPenaltyMg: 0,
+    keptSugarPenaltyG: 0,
+    keptSatFatPenaltyG: 5.0,
+    description: '+5 g saturated fat (sample estimate)',
+  },
 };
 
 export const DIET_OPTIONS: DietOption[] = [
@@ -191,16 +257,18 @@ export const BUTTER_CHICKEN_BASE_DATA: RebuiltRecipeData = {
   dishName: 'Butter Chicken',
   tagline: 'Rebuilt for lower sodium & saturated fat while keeping rich restaurant aroma.',
   flavorMatchPercent: 94,
+  flavorMatchLabel: '94% Flavor Match (sample)',
   costPerServing: 65,
   difficulty: 'Easy',
   estimatedTimeMins: 30,
 
-  // Values strictly matching requirements
+  // Base rebuilt values strictly matching requirements
   originalSodiumMg: 890,
   rebuiltSodiumMg: 310,
   limitSodiumMg: 350,
   sodiumLimitComparison: 'about 2.5x the limit', // 890 mg vs 350 mg is ~2.5x
   sodiumLimitPercentage: 88, // 310/350 is ~88.5%
+  isSodiumOverLimit: false,
 
   originalSatFatG: 14.0,
   rebuiltSatFatG: 3.9,
@@ -211,21 +279,30 @@ export const BUTTER_CHICKEN_BASE_DATA: RebuiltRecipeData = {
 
   originalIngredients: [
     'Bone-in or boneless chicken',
-    'Heavy dairy cream',
-    'Salted table butter & ghee',
-    'Refined table salt',
     'Tomato puree & whole tomatoes',
-    'Refined white sugar',
     'Kasuri methi (fenugreek)',
     'Ginger & garlic paste',
+    'Refined table salt',
+    'Refined white sugar',
+    'Salted table butter & ghee',
+    'Heavy dairy cream',
   ],
+
+  rebuiltIngredients: [
+    'Refined table salt',
+    'Refined white sugar',
+    'Salted table butter & ghee',
+    'Heavy dairy cream',
+  ],
+
+  keptIngredients: [],
 
   swaps: [
     {
       id: 'swap-salt',
       originalIngredient: 'Table salt',
       rebuiltIngredient: 'Roasted cumin + amchur',
-      aromaNotes: 'Earthy, tangy punch activating salivary tang receptors',
+      aromaNotes: 'Earthy, tangy punch replicating salty contrast',
       whyThisWorks: 'Roasted cumin provides a deep savory baseline while raw mango powder (amchur) lends natural acidity that mimics salty sharpness on your tongue.',
     },
     {
@@ -235,7 +312,7 @@ export const BUTTER_CHICKEN_BASE_DATA: RebuiltRecipeData = {
       rebuiltIngredientNutAllergy: 'Pumpkin seed cream + bloomed kasuri methi',
       aromaNotes: 'Silky mouthfeel & rich lactone-like nutty sweetness',
       whyThisWorks: 'Blended soaked cashews replicate the velvet emulsified body of heavy cream, while warm-bloomed kasuri methi shares a similar aroma to clarified butter.',
-      whyThisWorksNutAllergy: 'Blended toasted pumpkin seeds provide an identical silky, emulsion-rich texture free of tree nuts, pairing with bloomed kasuri methi to deliver rich buttery depth.',
+      whyThisWorksNutAllergy: 'Blended toasted pumpkin seeds provide a similar silky, emulsion-rich texture free of tree nuts, pairing with bloomed kasuri methi to deliver rich buttery depth.',
     },
   ],
 

@@ -13,9 +13,16 @@ import {
   Flame,
   Check,
   CookingPot,
+  Lock,
 } from 'lucide-react';
 import { SampleBadge } from './SampleBadge';
-import { DISHES_CATALOG, PLATFORM_STATS, BUTTER_CHICKEN_BASE_DATA } from '../data/sampleData';
+import {
+  DISHES_CATALOG,
+  PLATFORM_STATS,
+  CORE_INGREDIENTS,
+  TOGGLEABLE_INGREDIENTS,
+  SAMPLE_INGREDIENT_PENALTIES,
+} from '../data/sampleData';
 
 interface BuildDishScreenProps {
   diet: string;
@@ -23,8 +30,8 @@ interface BuildDishScreenProps {
   allergies: string[];
   selectedDishId: string;
   setSelectedDishId: (id: string) => void;
-  removedItems: string[];
-  setRemovedItems: React.Dispatch<React.SetStateAction<string[]>>;
+  rebuiltIngredients: string[];
+  setRebuiltIngredients: React.Dispatch<React.SetStateAction<string[]>>;
   onRebuild: () => void;
   onBackToDiet: () => void;
 }
@@ -35,8 +42,8 @@ export const BuildDishScreen: React.FC<BuildDishScreenProps> = ({
   allergies,
   selectedDishId,
   setSelectedDishId,
-  removedItems,
-  setRemovedItems,
+  rebuiltIngredients,
+  setRebuiltIngredients,
   onRebuild,
   onBackToDiet,
 }) => {
@@ -57,13 +64,17 @@ export const BuildDishScreen: React.FC<BuildDishScreenProps> = ({
     (d.hindiName && d.hindiName.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  // Toggle ingredient removal
-  const toggleRemovedItem = (ingredientName: string) => {
-    setRemovedItems((prev) =>
+  // Toggle rebuild status for customizable chips (ON = rebuild this, OFF = keep original)
+  const toggleRebuildIngredient = (ingredientName: string) => {
+    setRebuiltIngredients((prev) =>
       prev.includes(ingredientName)
         ? prev.filter((item) => item !== ingredientName)
         : [...prev, ingredientName]
     );
+  };
+
+  const resetAllToRebuild = () => {
+    setRebuiltIngredients(TOGGLEABLE_INGREDIENTS);
   };
 
   // Browser speech recognition
@@ -117,7 +128,7 @@ export const BuildDishScreen: React.FC<BuildDishScreenProps> = ({
       };
 
       recognition.start();
-    } catch (err) {
+    } catch {
       setIsListening(false);
       setSpeechStatus('Microphone access was denied or unavailable.');
       setTimeout(() => setSpeechStatus(null), 3500);
@@ -129,7 +140,6 @@ export const BuildDishScreen: React.FC<BuildDishScreenProps> = ({
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setPhotoUploaded(file.name);
-      // Auto-focus on Butter Chicken as demo target
       setSelectedDishId('butter-chicken');
     }
   };
@@ -137,12 +147,13 @@ export const BuildDishScreen: React.FC<BuildDishScreenProps> = ({
   // Trigger rebuild with animated loading step
   const handleRebuildClick = () => {
     setIsAnalyzing(true);
-    // Short loading transition before showing numbers
     setTimeout(() => {
       setIsAnalyzing(false);
       onRebuild();
     }, 1100);
   };
+
+  const keptCount = TOGGLEABLE_INGREDIENTS.length - rebuiltIngredients.length;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 md:py-10">
@@ -178,7 +189,7 @@ export const BuildDishScreen: React.FC<BuildDishScreenProps> = ({
 
         <button
           onClick={onBackToDiet}
-          className="self-start sm:self-center text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] bg-[#FFFDF9] hover:bg-[#FFE0CE] text-[#193826] transition-colors cursor-pointer flex items-center gap-1.5"
+          className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] bg-[#FFFDF9] hover:bg-[#FFE0CE] text-[#193826] transition-colors cursor-pointer flex items-center gap-1.5"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Change Profile</span>
@@ -376,7 +387,7 @@ export const BuildDishScreen: React.FC<BuildDishScreenProps> = ({
                   Salt &amp; Sodium
                 </span>
                 <p className="text-xs font-semibold text-[#193826]">
-                  Table salt replaced by roasted cumin &amp; tangy amchur (dry mango) activating deep salivary aroma receptors.
+                  Table salt replaced by roasted cumin &amp; tangy amchur (dry mango).
                 </p>
               </div>
 
@@ -404,54 +415,108 @@ export const BuildDishScreen: React.FC<BuildDishScreenProps> = ({
             </p>
           </div>
 
-          {/* Ingredient Chips with Red-X Toggles */}
+          {/* CUSTOMIZE INGREDIENTS: ONLY 4 TOGGLEABLE CHIPS + LOCKED CORE INGREDIENTS */}
           <div className="p-6 rounded-2xl bg-[#FFFDF9] border-2 border-[#193826] ink-shadow">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
               <div>
                 <h3 className="font-serif text-lg font-bold text-[#193826]">
                   Customize Ingredients
                 </h3>
-                <p className="text-xs text-[#193826]/70">
-                  Click the red-X button to exclude or restore ingredients before rebuilding.
+                <p className="text-xs text-[#193826]/80 mt-0.5">
+                  A toggled-on chip means &quot;rebuild this&quot;. If toggled off, the original ingredient stays (sample estimates apply).
                 </p>
               </div>
-              {removedItems.length > 0 && (
+              {keptCount > 0 && (
                 <button
-                  onClick={() => setRemovedItems([])}
+                  type="button"
+                  onClick={resetAllToRebuild}
                   className="text-xs font-bold text-[#FF7B25] hover:underline self-start sm:self-auto cursor-pointer"
                 >
-                  Reset all ({removedItems.length} excluded)
+                  Reset all to Rebuild ({keptCount} kept)
                 </button>
               )}
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {BUTTER_CHICKEN_BASE_DATA.originalIngredients.map((ingredient) => {
-                const isExcluded = removedItems.includes(ingredient);
-                return (
-                  <button
+            {/* 1. Toggleable Chips (Only these 4 chips) */}
+            <div className="mb-4">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#193826]/75 mb-2">
+                Rebuild Targets (Toggle to rebuild or keep original)
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {TOGGLEABLE_INGREDIENTS.map((ingredient) => {
+                  const isRebuilding = rebuiltIngredients.includes(ingredient);
+                  const penalty = SAMPLE_INGREDIENT_PENALTIES[ingredient];
+                  return (
+                    <button
+                      key={ingredient}
+                      type="button"
+                      onClick={() => toggleRebuildIngredient(ingredient)}
+                      className={`p-3 rounded-xl text-left border-2 transition-all cursor-pointer flex items-center justify-between gap-2.5 ${
+                        isRebuilding
+                          ? 'bg-[#D8EFDF] text-[#193826] border-[#193826] ink-shadow-sm hover:translate-y-[-1px]'
+                          : 'bg-[#FFE0CE]/60 text-red-950 border-red-400 border-dashed hover:bg-[#FFE0CE]'
+                      }`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-xs sm:text-sm">
+                            {ingredient}
+                          </span>
+                        </div>
+                        <span className="text-[11px] block mt-0.5 font-medium">
+                          {isRebuilding ? (
+                            <span className="text-emerald-800 font-semibold">
+                              ✓ Rebuild this (sample swap active)
+                            </span>
+                          ) : (
+                            <span className="text-red-700 font-semibold">
+                              Original kept: {penalty?.description}
+                            </span>
+                          )}
+                        </span>
+                      </div>
+
+                      {isRebuilding ? (
+                        <span
+                          title="Click to keep original ingredient"
+                          className="w-6 h-6 rounded-full bg-red-100 text-red-700 hover:bg-red-600 hover:text-white flex items-center justify-center text-xs transition-colors shrink-0 border border-red-300"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </span>
+                      ) : (
+                        <span
+                          title="Click to rebuild this ingredient"
+                          className="w-6 h-6 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 flex items-center justify-center text-xs transition-colors shrink-0"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 2. Locked Core Ingredients (Chicken, Tomato, Kasuri Methi, Ginger-Garlic) */}
+            <div className="pt-3 border-t border-[#193826]/15">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#193826]/75 mb-2 flex items-center gap-1.5">
+                <Lock className="w-3 h-3 text-[#193826]/60" />
+                <span>Core Ingredients (Essential foundation, locked)</span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {CORE_INGREDIENTS.map((ingredient) => (
+                  <div
                     key={ingredient}
-                    type="button"
-                    onClick={() => toggleRemovedItem(ingredient)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border-2 transition-all cursor-pointer flex items-center gap-2 ${
-                      isExcluded
-                        ? 'bg-red-50 text-red-800 border-red-500 line-through opacity-75'
-                        : 'bg-[#FFF0C5] text-[#193826] border-[#193826] hover:bg-[#ffe6a4]'
-                    }`}
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold border-2 border-[#193826]/20 bg-[#FAF7F2] text-[#193826]/75 flex items-center gap-1.5 cursor-not-allowed select-none"
                   >
+                    <Lock className="w-3 h-3 text-[#193826]/50 shrink-0" />
                     <span>{ingredient}</span>
-                    {isExcluded ? (
-                      <span className="w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px]">
-                        <Plus className="w-3 h-3 rotate-45" />
-                      </span>
-                    ) : (
-                      <span className="w-4 h-4 rounded-full bg-red-100 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center text-[10px] transition-colors">
-                        <X className="w-3 h-3" />
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+                    <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#193826]/10 text-[#193826]/70 ml-1">
+                      Core
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

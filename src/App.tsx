@@ -11,6 +11,7 @@ import { RebuiltRecipeScreen } from './components/RebuiltRecipeScreen';
 import { FlavorBotModal } from './components/FlavorBotModal';
 import { Footer } from './components/Footer';
 import { getRebuiltRecipe } from './services/recipeService';
+import { TOGGLEABLE_INGREDIENTS } from './data/sampleData';
 
 export default function App() {
   // 3-step flow: 1 = Diet Profile, 2 = Build Dish, 3 = Rebuilt Recipe
@@ -20,17 +21,16 @@ export default function App() {
   const [diet, setDiet] = useState<string>('Non-veg');
   const [allergies, setAllergies] = useState<string[]>(['None']);
 
-  // Selected dish & custom removed ingredient chips
+  // Selected dish & 4 toggleable ingredients (default: all 4 toggled ON to "rebuild this")
   const [selectedDishId, setSelectedDishId] = useState<string>('butter-chicken');
-  const [removedItems, setRemovedItems] = useState<string[]>([]);
+  const [rebuiltIngredients, setRebuiltIngredients] = useState<string[]>(TOGGLEABLE_INGREDIENTS);
 
   // Compute rebuilt recipe via centralized service
   const recipeResult = useMemo(() => {
-    return getRebuiltRecipe(selectedDishId, diet, allergies, removedItems);
-  }, [selectedDishId, diet, allergies, removedItems]);
+    return getRebuiltRecipe(selectedDishId, diet, allergies, rebuiltIngredients);
+  }, [selectedDishId, diet, allergies, rebuiltIngredients]);
 
   const handleStepNavigation = (step: number) => {
-    // If navigating to step 3 directly without recipe compatibility, guide to step 2
     if (step === 3 && !recipeResult.isCompatible) {
       setCurrentStep(2);
       return;
@@ -40,7 +40,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#193826] selection:bg-[#FFF0C5] selection:text-[#193826]">
+    <div className="min-h-screen flex flex-col relative text-[#193826] selection:bg-[#FFF0C5] selection:text-[#193826]">
+      {/* Textured Dotted Sketchbook & Soft Watercolor Wash Layer */}
+      <div className="sketchbook-bg" aria-hidden="true" />
+
       {/* 3-Step Header with aroma deck stats */}
       <Header
         currentStep={currentStep}
@@ -68,8 +71,8 @@ export default function App() {
             allergies={allergies}
             selectedDishId={selectedDishId}
             setSelectedDishId={setSelectedDishId}
-            removedItems={removedItems}
-            setRemovedItems={setRemovedItems}
+            rebuiltIngredients={rebuiltIngredients}
+            setRebuiltIngredients={setRebuiltIngredients}
             onRebuild={() => handleStepNavigation(3)}
             onBackToDiet={() => handleStepNavigation(1)}
           />
@@ -82,7 +85,7 @@ export default function App() {
                 recipe={recipeResult.recipe}
                 diet={diet}
                 allergies={allergies}
-                removedItems={removedItems}
+                rebuiltIngredients={rebuiltIngredients}
                 onBackToBuild={() => handleStepNavigation(2)}
                 onBackToDiet={() => handleStepNavigation(1)}
               />

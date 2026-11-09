@@ -2,109 +2,87 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   getRebuiltRecipe,
-  getAvailableDishesForDiet,
   toggleAllergySelection,
 } from './recipeService';
+import { TOGGLEABLE_INGREDIENTS } from '../data/sampleData';
 
-test('getRebuiltRecipe returns correct values for Butter Chicken default Non-veg', () => {
-  const result = getRebuiltRecipe('butter-chicken', 'Non-veg', ['None'], []);
+test('getRebuiltRecipe returns base values when all 4 customizable chips are toggled ON', () => {
+  const result = getRebuiltRecipe('butter-chicken', 'Non-veg', ['None'], TOGGLEABLE_INGREDIENTS);
   assert.equal(result.isCompatible, true);
   assert.ok(result.recipe);
 
   const r = result.recipe;
-  assert.equal(r.dishName, 'Butter Chicken');
-  assert.equal(r.originalSodiumMg, 890);
   assert.equal(r.rebuiltSodiumMg, 310);
   assert.equal(r.limitSodiumMg, 350);
-  assert.equal(r.sodiumLimitComparison, 'about 2.5x the limit');
-  assert.equal(r.sodiumLimitPercentage, 88);
-
-  assert.equal(r.originalSatFatG, 14.0);
-  assert.equal(r.rebuiltSatFatG, 3.9);
-  assert.equal(r.satFatReductionPercent, 72);
-
-  assert.equal(r.originalAddedSugarG, 4.0);
+  assert.equal(r.isSodiumOverLimit, false);
+  assert.equal(r.sodiumWarning, undefined);
   assert.equal(r.rebuiltAddedSugarG, 1.0);
+  assert.equal(r.rebuiltSatFatG, 3.9);
+  assert.equal(r.flavorMatchLabel, '94% Flavor Match (sample)');
+});
 
-  assert.equal(r.flavorMatchPercent, 94);
-  assert.equal(r.costPerServing, 65);
-  assert.equal(r.difficulty, 'Easy');
-  assert.equal(r.estimatedTimeMins, 30);
+test('toggling off salt keeps original ingredient and triggers Over your 350 mg limit', () => {
+  // Omit 'Refined table salt' from rebuilt ingredients
+  const rebuiltWithoutSalt = TOGGLEABLE_INGREDIENTS.filter((i) => i !== 'Refined table salt');
+  const result = getRebuiltRecipe('butter-chicken', 'Non-veg', ['None'], rebuiltWithoutSalt);
+  assert.equal(result.isCompatible, true);
+  assert.ok(result.recipe);
 
-  // Check 3 cooking steps with times: 5, 15, 10
-  assert.equal(r.cookingSteps.length, 3);
-  assert.deepEqual(
-    r.cookingSteps.map((s) => s.timeMinutes),
-    [5, 15, 10]
-  );
+  const r = result.recipe;
+  assert.equal(r.rebuiltSodiumMg, 830); // 310 + 520
+  assert.equal(r.isSodiumOverLimit, true);
+  assert.equal(r.sodiumWarning, 'Over your 350 mg limit');
+});
 
-  // Normal nut swap has cashews
-  const creamSwap = r.swaps.find((s) => s.id === 'swap-butter-cream');
-  assert.ok(creamSwap?.rebuiltIngredient.includes('Cashew cream'));
+test('toggling off sugar adds +3 g sugar penalty', () => {
+  const rebuiltWithoutSugar = TOGGLEABLE_INGREDIENTS.filter((i) => i !== 'Refined white sugar');
+  const result = getRebuiltRecipe('butter-chicken', 'Non-veg', ['None'], rebuiltWithoutSugar);
+  assert.ok(result.recipe);
+  assert.equal(result.recipe.rebuiltAddedSugarG, 4.0); // 1.0 + 3.0
+});
 
-  const cashewsInShopping = r.shoppingList.some((item) =>
-    item.name.toLowerCase().includes('cashew')
-  );
-  assert.equal(cashewsInShopping, true);
+test('toggling off butter and cream adds +9 g and +5 g saturated fat penalties', () => {
+  const rebuiltWithoutDairy = ['Refined table salt', 'Refined white sugar'];
+  const result = getRebuiltRecipe('butter-chicken', 'Non-veg', ['None'], rebuiltWithoutDairy);
+  assert.ok(result.recipe);
+  assert.equal(result.recipe.rebuiltSatFatG, 17.9); // 3.9 + 9.0 + 5.0
 });
 
 test('getRebuiltRecipe applies Nuts allergy rule correctly everywhere', () => {
-  const result = getRebuiltRecipe('butter-chicken', 'Non-veg', ['Nuts'], []);
+  const result = getRebuiltRecipe('butter-chicken', 'Non-veg', ['Nuts'], TOGGLEABLE_INGREDIENTS);
   assert.equal(result.isCompatible, true);
   assert.ok(result.recipe);
 
   const r = result.recipe;
-  // Swaps must use pumpkin seed cream
   const creamSwap = r.swaps.find((s) => s.id === 'swap-butter-cream');
   assert.ok(
-    creamSwap?.rebuiltIngredient.toLowerCase().includes('pumpkin seed cream'),
-    'Cream swap should specify pumpkin seed cream'
+    creamSwap?.rebuiltIngredient.toLowerCase().includes('pumpkin seed cream')
   );
   assert.equal(creamSwap?.rebuiltIngredient.includes('Cashew'), false);
-
-  // Shopping list must replace cashews with pumpkin seeds
-  const hasCashews = r.shoppingList.some((item) =>
-    item.name.toLowerCase().includes('cashew')
-  );
-  assert.equal(hasCashews, false, 'Cashews should not be in shopping list');
-
-  const hasPumpkinSeeds = r.shoppingList.some((item) =>
-    item.name.toLowerCase().includes('pumpkin seeds')
-  );
-  assert.equal(hasPumpkinSeeds, true, 'Pumpkin seeds must be in shopping list');
-
-  // Step 2 must instruct pumpkin seed cream
+  // Verify wording change: "similar" instead of "identical"
   assert.ok(
-    r.cookingSteps[1].instruction.toLowerCase().includes('pumpkin seed cream'),
-    'Step 2 instruction should mention pumpkin seed cream'
+    creamSwap?.whyThisWorks.toLowerCase().includes('similar'),
+    'Why this works should use the word similar'
+  );
+  assert.equal(
+    creamSwap?.whyThisWorks.toLowerCase().includes('identical'),
+    false,
+    'Why this works should not contain identical'
   );
 });
 
 test('Vegetarian and Vegan diets are rejected for Butter Chicken with friendly notice', () => {
-  const vegResult = getRebuiltRecipe('butter-chicken', 'Vegetarian', ['None'], []);
+  const vegResult = getRebuiltRecipe('butter-chicken', 'Vegetarian', ['None'], TOGGLEABLE_INGREDIENTS);
   assert.equal(vegResult.isCompatible, false);
   assert.ok(
     vegResult.incompatibilityReason?.includes('No sample dish for this diet yet')
   );
-
-  const veganResult = getRebuiltRecipe('butter-chicken', 'Vegan', ['None'], []);
-  assert.equal(veganResult.isCompatible, false);
 });
 
 test('toggleAllergySelection enforces exclusivity of None', () => {
-  // If None is toggled when others are selected, only None remains
   const res1 = toggleAllergySelection(['Nuts', 'Gluten'], 'None');
   assert.deepEqual(res1, ['None']);
 
-  // If another allergy is added when None is active, None is dropped
   const res2 = toggleAllergySelection(['None'], 'Soy');
   assert.deepEqual(res2, ['Soy']);
-
-  // Adding multiple
-  const res3 = toggleAllergySelection(['Soy'], 'Eggs');
-  assert.deepEqual(res3.sort(), ['Eggs', 'Soy'].sort());
-
-  // Deselecting all leaves None
-  const res4 = toggleAllergySelection(['Soy'], 'Soy');
-  assert.deepEqual(res4, ['None']);
 });

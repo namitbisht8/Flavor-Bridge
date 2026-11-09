@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   Info,
   Check,
+  AlertTriangle,
 } from 'lucide-react';
 import { SampleBadge } from './SampleBadge';
 import { RebuiltRecipeData, PLATFORM_STATS } from '../data/sampleData';
@@ -24,7 +25,7 @@ interface RebuiltRecipeScreenProps {
   recipe: RebuiltRecipeData;
   diet: string;
   allergies: string[];
-  removedItems: string[];
+  rebuiltIngredients: string[];
   onBackToBuild: () => void;
   onBackToDiet: () => void;
 }
@@ -32,7 +33,6 @@ interface RebuiltRecipeScreenProps {
 export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
   recipe,
   allergies,
-  removedItems,
   onBackToBuild,
   onBackToDiet,
 }) => {
@@ -49,7 +49,6 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    // Check if recipe was previously saved in localStorage
     try {
       const saved = localStorage.getItem(`flavor_bridge_saved_${recipe.dishId}`);
       if (saved) setIsSaved(true);
@@ -58,7 +57,6 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
     }
 
     return () => {
-      // Clean up speech synthesis when navigating away
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
@@ -102,7 +100,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
 
   const handleShareWhatsApp = () => {
     const text = encodeURIComponent(
-      `Check out this rebuilt ${recipe.dishName} recipe on Flavor Bridge! Sodium reduced from ${recipe.originalSodiumMg}mg to ${recipe.rebuiltSodiumMg}mg (within ${recipe.limitSodiumMg}mg limit) with a ${recipe.flavorMatchPercent}% flavor match!`
+      `Check out this rebuilt ${recipe.dishName} recipe on Flavor Bridge! Sodium: ${recipe.rebuiltSodiumMg}mg (sample estimate) with ${recipe.flavorMatchLabel}!`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
@@ -222,6 +220,28 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
         <p className="text-xs text-gray-700">{recipe.disclaimer}</p>
       </div>
 
+      {/* Red Sodium Limit Warning Banner if salt kept */}
+      {recipe.isSodiumOverLimit && (
+        <div className="mb-6 p-4 rounded-2xl bg-red-50 border-2 border-red-500 text-red-950 ink-shadow flex items-start gap-3 animate-in fade-in duration-200">
+          <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+            <AlertTriangle className="w-5 h-5" />
+          </div>
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-2 mb-0.5">
+              <span className="font-serif font-bold text-base text-red-900">
+                {recipe.sodiumWarning || 'Over your 350 mg limit'}
+              </span>
+              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-200 text-red-900 border border-red-300">
+                Sample estimate
+              </span>
+            </div>
+            <p className="text-xs text-red-800 leading-relaxed font-medium">
+              Because original refined table salt was kept (+520 mg sodium sample estimate), the total rebuilt sodium reaches <strong>{recipe.rebuiltSodiumMg} mg</strong> ({recipe.sodiumLimitPercentage}% of your {recipe.limitSodiumMg} mg limit). To stay under limit, toggle &quot;Refined table salt&quot; back on in Step 2.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* BEFORE VS AFTER CARD */}
       <div className="mb-6 rounded-2xl border-2 border-[#193826] bg-[#FFFDF9] ink-shadow overflow-hidden">
         <div className="p-4 sm:p-5 bg-[#193826] text-[#FAF7F2] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -234,8 +254,9 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
             </h2>
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
+            {/* Requirement 4: Show "94% Flavor Match (sample)" until live data is connected */}
             <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[#D8EFDF] text-[#193826] border border-white">
-              {recipe.flavorMatchPercent}% Flavor Match
+              {recipe.flavorMatchLabel}
             </span>
           </div>
         </div>
@@ -255,8 +276,8 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-xs font-bold text-[#193826] mb-1">
-                  <span>Sodium Content</span>
-                  <span className="text-red-700 text-sm">{recipe.originalSodiumMg} mg</span>
+                  <span>Sodium Content (Sample estimate)</span>
+                  <span className="text-red-700 text-sm font-extrabold">{recipe.originalSodiumMg} mg</span>
                 </div>
                 <div className="w-full h-3 bg-red-100 rounded-full border border-red-300 overflow-hidden">
                   <div className="h-full bg-red-500 rounded-full" style={{ width: '100%' }} />
@@ -290,7 +311,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                 Flavor Bridge Rebuilt
               </span>
               <span className="text-xs font-bold text-emerald-800">
-                {PLATFORM_STATS.scienceNotice}
+                {PLATFORM_STATS.scienceNotice} (sample estimates)
               </span>
             </div>
 
@@ -298,20 +319,39 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
               <div>
                 <div className="flex justify-between text-xs font-bold text-[#193826] mb-1">
                   <span>Sodium (Target Limit: {recipe.limitSodiumMg} mg)</span>
-                  <span className="text-emerald-800 text-sm font-extrabold">
-                    {recipe.rebuiltSodiumMg} mg <span className="text-xs font-semibold">({recipe.sodiumLimitPercentage}%)</span>
+                  <span className={`text-sm font-extrabold flex items-center gap-1.5 ${
+                    recipe.isSodiumOverLimit ? 'text-red-700' : 'text-emerald-800'
+                  }`}>
+                    {recipe.rebuiltSodiumMg} mg
+                    <span className="text-xs font-semibold">({recipe.sodiumLimitPercentage}%)</span>
                   </span>
                 </div>
-                {/* Sodium bar strictly representing 310/350 (88%) with limit mark */}
-                <div className="relative w-full h-3 bg-emerald-100 rounded-full border border-emerald-400 overflow-hidden">
+
+                {/* Sodium bar strictly reflecting calculated sodium relative to 350 mg limit */}
+                <div className={`relative w-full h-3 rounded-full border overflow-hidden ${
+                  recipe.isSodiumOverLimit ? 'bg-red-100 border-red-400' : 'bg-emerald-100 border-emerald-400'
+                }`}>
                   <div
-                    className="h-full bg-emerald-500 rounded-full transition-all duration-700"
-                    style={{ width: `${recipe.sodiumLimitPercentage}%` }}
+                    className={`h-full rounded-full transition-all duration-700 ${
+                      recipe.isSodiumOverLimit ? 'bg-red-600' : 'bg-emerald-500'
+                    }`}
+                    style={{ width: `${Math.min(100, recipe.sodiumLimitPercentage)}%` }}
                   />
                 </div>
-                <div className="flex justify-between text-[11px] text-emerald-800 font-semibold mt-0.5">
-                  <span>310 mg / 350 mg limit</span>
-                  <span>Safe room: {recipe.limitSodiumMg - recipe.rebuiltSodiumMg} mg</span>
+
+                <div className="flex justify-between text-[11px] font-semibold mt-0.5">
+                  <span className={recipe.isSodiumOverLimit ? 'text-red-800 font-bold' : 'text-emerald-800'}>
+                    {recipe.rebuiltSodiumMg} mg / {recipe.limitSodiumMg} mg limit
+                  </span>
+                  {recipe.isSodiumOverLimit ? (
+                    <span className="text-red-700 font-bold uppercase tracking-wider">
+                      Over your 350 mg limit
+                    </span>
+                  ) : (
+                    <span className="text-emerald-800">
+                      Safe room: {recipe.limitSodiumMg - recipe.rebuiltSodiumMg} mg
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -319,28 +359,45 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                 <div>
                   <span className="text-[#193826]/70 block font-semibold">Saturated Fat</span>
                   <span className="font-bold text-emerald-800 text-sm">
-                    {recipe.rebuiltSatFatG} g <span className="text-[10px] text-emerald-700 font-extrabold">(-{recipe.satFatReductionPercent}%)</span>
+                    {recipe.rebuiltSatFatG} g{' '}
+                    {recipe.satFatReductionPercent > 0 && (
+                      <span className="text-[10px] text-emerald-700 font-extrabold">
+                        (-{recipe.satFatReductionPercent}%)
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div>
                   <span className="text-[#193826]/70 block font-semibold">Added Sugar</span>
                   <span className="font-bold text-emerald-800 text-sm">
-                    {recipe.rebuiltAddedSugarG.toFixed(1)} g <span className="text-[10px] text-emerald-700 font-extrabold">(-75%)</span>
+                    {recipe.rebuiltAddedSugarG.toFixed(1)} g{' '}
+                    {recipe.rebuiltAddedSugarG < recipe.originalAddedSugarG && (
+                      <span className="text-[10px] text-emerald-700 font-extrabold">
+                        (-{Math.round(((recipe.originalAddedSugarG - recipe.rebuiltAddedSugarG) / recipe.originalAddedSugarG) * 100)}%)
+                      </span>
+                    )}
                   </span>
                 </div>
               </div>
 
               <div className="text-[11px] text-[#193826]/80 font-medium">
-                Rebuilt with: {allergies.includes('Nuts') ? 'Pumpkin seed cream' : 'Cashew cream'}, roasted cumin + amchur, bloomed kasuri methi.
+                {recipe.rebuiltIngredients.includes('Refined table salt')
+                  ? 'Rebuilt with roasted cumin + amchur. '
+                  : 'Table salt kept. '}
+                {recipe.rebuiltIngredients.includes('Heavy dairy cream') || recipe.rebuiltIngredients.includes('Salted table butter & ghee')
+                  ? `Rebuilt with ${allergies.includes('Nuts') ? 'pumpkin seed cream' : 'cashew cream'} & bloomed kasuri methi.`
+                  : 'Dairy butter and cream kept.'}
               </div>
             </div>
           </div>
         </div>
 
-        {removedItems.length > 0 && (
+        {recipe.keptIngredients.length > 0 && (
           <div className="p-3 bg-[#FFF0C5] border-t-2 border-[#193826] text-xs font-semibold text-[#193826] flex items-center gap-2">
             <Info className="w-4 h-4 text-[#FF7B25] shrink-0" />
-            <span>Custom excluded ingredients: {removedItems.join(', ')}</span>
+            <span>
+              <strong>Sample estimates applied for kept ingredients:</strong> {recipe.keptIngredients.join(', ')} retained original formulation.
+            </span>
           </div>
         )}
       </div>
@@ -422,7 +479,11 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                       {swap.originalIngredient}
                     </span>
                     <span className="text-xs text-[#193826]/50">swapped with</span>
-                    <span className="text-emerald-800 bg-[#D8EFDF] px-2.5 py-0.5 rounded border border-emerald-600">
+                    <span className={`px-2.5 py-0.5 rounded border ${
+                      swap.isRebuilt !== false
+                        ? 'text-emerald-800 bg-[#D8EFDF] border-emerald-600'
+                        : 'text-amber-900 bg-[#FFF0C5] border-amber-600'
+                    }`}>
                       {swap.rebuiltIngredient}
                     </span>
                   </div>
@@ -439,8 +500,9 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                 {isExpanded && (
                   <div className="px-4 pb-4 pt-1 bg-white border-t border-[#193826]/20">
                     <div className="p-3 rounded-lg bg-[#FFF0C5]/60 border border-[#193826]/30 text-xs text-[#193826] leading-relaxed">
+                      {/* Requirement 3: Label each Aroma Twin Explanation as Sample explanation */}
                       <strong className="block text-[#FF7B25] mb-1 uppercase tracking-wider text-[10px] font-extrabold">
-                        Aroma twin explanation
+                        Sample explanation
                       </strong>
                       <p>{swap.whyThisWorks}</p>
                     </div>

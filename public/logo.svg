@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <!-- Icon Background Squircle -->
+  <rect x="7" y="7" width="186" height="186" rx="42" ry="42" fill="#FEEFCA" stroke="#193826" stroke-width="7" stroke-linejoin="round" />
+
+  <!-- Chef Hat Puffy Crown (White with Dark Green Stroke) -->
+  <path
+    d="M 64 128
+       L 64 116
+       C 48 114, 40 102, 40 88
+       C 40 72, 50 60, 58 56
+       C 56 42, 70 34, 86 38
+       C 96 32, 114 32, 126 40
+       C 138 36, 150 44, 154 58
+       C 162 68, 162 84, 156 98
+       C 152 110, 142 116, 136 116
+       L 136 128
+       Z"
+    fill="#FFFFFF"
+    stroke="#193826"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Internal Gather Crease Lines -->
+  <path d="M 86 128 C 84 118 84 110 86 104" fill="none" stroke="#193826" stroke-width="5.5" stroke-linecap="round" />
+  <path d="M 114 128 C 116 118 116 110 114 104" fill="none" stroke="#193826" stroke-width="5.5" stroke-linecap="round" />
+
+  <!-- Mint Leaf Accent on Upper Right -->
+  <g transform="translate(144, 34) rotate(-24)">
+    <path
+      d="M 4 22 C 0 9, 15 0, 28 0 C 28 13, 19 26, 4 22 Z"
+      fill="#357A57"
+      stroke="#193826"
+      stroke-width="5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M 6 20 C 13 13, 20 8, 24 4"
+      fill="none"
+      stroke="#193826"
+      stroke-width="3.5"
+      stroke-linecap="round"
+    />
+  </g>
+
+  <!-- Saffron Headband with Bridge Arch -->
+  <rect x="56" y="128" width="88" height="30" rx="8" fill="#ECA038" stroke="#193826" stroke-width="7" stroke-linejoin="round" />
+  
+  <!-- Bridge Arch Motif inside Headband -->
+  <line x1="70" y1="151" x2="130" y2="151" stroke="#193826" stroke-width="5" stroke-linecap="round" />
+  <path d="M 76 151 C 76 137, 124 137, 124 151" fill="none" stroke="#193826" stroke-width="5" stroke-linecap="round" />
+</svg>
