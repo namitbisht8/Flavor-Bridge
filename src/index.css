@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Domine", Georgia, serif;
+  --font-sans: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-mint: #D8EFDF;
+  --color-butter: #FFF0C5;
+  --color-peach: #FFE0CE;
+  --color-sky: #D6E8F4;
+  --color-saffron: #FF7B25;
+  --color-saffron-hover: #E86A18;
+  --color-ink: #193826;
+  --color-canvas: #FAF7F2;
+}
+
+@layer base {
+  body {
+    background-color: #FAF7F2;
+    color: #193826;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+  }
+}
+
+.ink-border {
+  border: 2px solid #193826;
+}
+
+.ink-border-thick {
+  border: 2.5px solid #193826;
+}
+
+.ink-shadow {
+  box-shadow: 3px 3px 0px #193826;
+}
+
+.ink-shadow-sm {
+  box-shadow: 2px 2px 0px #193826;
+}
+
+.ink-shadow-lg {
+  box-shadow: 5px 5px 0px #193826;
+}
+
+.ink-button {
+  border: 2px solid #193826;
+  box-shadow: 3px 3px 0px #193826;
+  transition: all 0.15s ease-in-out;
+}
+
+.ink-button:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #193826;
+}
+
+.ink-button:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #193826;
+}
+
+/* Print styles for Recipe Guide */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .print-clean {
+    box-shadow: none !important;
+    border: 1px solid #999 !important;
+  }
+}

@@ -1,0 +1,231 @@
+---
+name: Sketchbook Gastronomy
+colors:
+  surface: '#f8faf5'
+  surface-dim: '#d8dbd6'
+  surface-bright: '#f8faf5'
+  surface-container-lowest: '#ffffff'
+  surface-container-low: '#f2f4ef'
+  surface-container: '#ecefea'
+  surface-container-high: '#e7e9e4'
+  surface-container-highest: '#e1e3de'
+  on-surface: '#191c1a'
+  on-surface-variant: '#414944'
+  inverse-surface: '#2e312e'
+  inverse-on-surface: '#eff1ec'
+  outline: '#717973'
+  outline-variant: '#c0c9c2'
+  surface-tint: '#3a6753'
+  primary: '#023625'
+  on-primary: '#ffffff'
+  primary-container: '#1f4d3a'
+  on-primary-container: '#8dbda4'
+  inverse-primary: '#a1d1b8'
+  secondary: '#835400'
+  on-secondary: '#ffffff'
+  secondary-container: '#feb64e'
+  on-secondary-container: '#714800'
+  tertiary: '#003718'
+  on-tertiary: '#ffffff'
+  tertiary-container: '#005025'
+  on-tertiary-container: '#6ac582'
+  error: '#ba1a1a'
+  on-error: '#ffffff'
+  error-container: '#ffdad6'
+  on-error-container: '#93000a'
+  primary-fixed: '#bceed3'
+  primary-fixed-dim: '#a1d1b8'
+  on-primary-fixed: '#002114'
+  on-primary-fixed-variant: '#214f3c'
+  secondary-fixed: '#ffddb5'
+  secondary-fixed-dim: '#ffb956'
+  on-secondary-fixed: '#2a1800'
+  on-secondary-fixed-variant: '#643f00'
+  tertiary-fixed: '#9af7af'
+  tertiary-fixed-dim: '#7eda95'
+  on-tertiary-fixed: '#00210c'
+  on-tertiary-fixed-variant: '#005227'
+  background: '#f8faf5'
+  on-background: '#191c1a'
+  surface-variant: '#e1e3de'
+typography:
+  display-hero:
+    fontFamily: Domine
+    fontSize: 56px
+    fontWeight: '700'
+    lineHeight: 64px
+    letterSpacing: -0.02em
+  headline-lg:
+    fontFamily: Domine
+    fontSize: 38px
+    fontWeight: '700'
+    lineHeight: 46px
+    letterSpacing: -0.015em
+  headline-lg-mobile:
+    fontFamily: Domine
+    fontSize: 28px
+    fontWeight: '700'
+    lineHeight: 36px
+    letterSpacing: -0.01em
+  headline-md:
+    fontFamily: Domine
+    fontSize: 26px
+    fontWeight: '700'
+    lineHeight: 34px
+    letterSpacing: 0em
+  headline-sm:
+    fontFamily: Domine
+    fontSize: 20px
+    fontWeight: '700'
+    lineHeight: 28px
+    letterSpacing: 0em
+  eyebrow-caps:
+    fontFamily: Nunito Sans
+    fontSize: 13px
+    fontWeight: '800'
+    lineHeight: 18px
+    letterSpacing: 0.18em
+  body-lg:
+    fontFamily: Nunito Sans
+    fontSize: 19px
+    fontWeight: '500'
+    lineHeight: 30px
+    letterSpacing: 0em
+  body-md:
+    fontFamily: Nunito Sans
+    fontSize: 16px
+    fontWeight: '400'
+    lineHeight: 26px
+    letterSpacing: 0em
+  body-sm:
+    fontFamily: Nunito Sans
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 22px
+    letterSpacing: 0em
+  stat-display:
+    fontFamily: Domine
+    fontSize: 44px
+    fontWeight: '700'
+    lineHeight: 48px
+    letterSpacing: -0.02em
+  label-strong:
+    fontFamily: Nunito Sans
+    fontSize: 15px
+    fontWeight: '700'
+    lineHeight: 20px
+    letterSpacing: 0.02em
+  badge-step:
+    fontFamily: Nunito Sans
+    fontSize: 16px
+    fontWeight: '800'
+    lineHeight: 20px
+    letterSpacing: 0em
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  gutter: 1.5rem
+  gutter-mobile: 1rem
+  margin: 2.5rem
+  margin-mobile: 1.25rem
+  space-xs: 0.375rem
+  space-sm: 0.75rem
+  space-md: 1.25rem
+  space-lg: 2rem
+  space-xl: 3rem
+---
+
+## Brand & Style
+
+This design system pairs the precision of computational gastronomy with the comforting warmth of a handwritten family recipe journal. Designed for individuals navigating medically restricted diets (hypertension, kidney disease, diabetes, cardiac rehabilitation) along with their caregivers and multi-generational families, the system removes the cold, sterile clinical feel of medical apps in favor of reassurance, culinary optimism, and home-kitchen familiarity.
+
+### Aesthetic Movement & Tone
+- **Organic Sketchbook & Tactile Folk Modern:** Heavy, deliberate dark-green outlines (#1F4D3A) that feel hand-inked, paired with subtle organic corner variations, pillowed surfaces, and offset drop shadows that suggest pressed cardstock layered onto a prep counter.
+- **Warm Culinary Optimism:** A wash of natural spices, turmeric, cardamom, and soft herb pastels replaces clinical stark whites and medical blues.
+- **Empathetic Legibility:** High tactile affordance, generous hit areas (minimum 48px–56px touch boundaries), high-contrast text hierarchies, and intuitive color coding for safety and restriction reassurance.
+
+## Colors
+
+The color architecture grounds scientific dietetics in edible, natural tones. Rather than cold diagnostic grays, the palette uses botanical greens, soft dairy, grain pastels, and culinary accents.
+
+### Color Roles & Semantics
+- **Primary Ink (`#1F4D3A`):** Deep forest herb green. Used for structural line-work, card strokes, major headings, and primary container boundaries.
+- **Canvas Base (`#F6F8F3`):** Unbleached parchment off-white. Supports layered subtle watercolor vignettes and warm spice fleck distributions (`#E8A33D` and `#2D8A4E` at low opacity).
+- **Interactive Accent / Saffron (`#E8A33D`):** Warm turmeric/saffron orange. Reserved for interactive call-to-actions, sequence step numbers, highlighted recommendations, and progress milestones.
+- **Pastel Card Foundations:**
+  - **Mint (`#D8EFDF`):** Used for verified safe formulations, computational matching, and aroma science callouts.
+  - **Butter Yellow (`#FFF0C5`):** Used for base recipe inputs, step instructions, and active dietary profiles.
+  - **Peach (`#FFE0CE`):** Used for culinary transformations, cooking steps, and warning/limit awareness zones.
+  - **Sky Blue (`#D6E8F4`):** Used for diagnostic limits, clinical parameter cards, and biochemical database tags.
+- **Semantic Validation:**
+  - **Safe Verification (`#2D8A4E`):** Vibrant garden green for safe checkmarks, permissible nutrients, and compliant badges.
+  - **Restricted / Excluded (`#D94841`):** Terracotta crimson for excluded allergens, sodium/sugar reductions, and strict cutoff crosses.
+
+## Typography
+
+The type system balances the authority of culinary literature with high legibility for users with varied visual acuity.
+
+- **Headlines (`Domine`):** A sturdy, warm-serif display face featuring round brackets and open counters. It provides the gravitas of a classic cookbook while maintaining clarity on digital displays. Used exclusively in deep ink `#1F4D3A`.
+- **Body & Labels (`Nunito Sans`):** A humanist sans-serif with friendly geometric curves and open terminals that prevents eye fatigue across complex medical nutritional readouts.
+- **Eyebrow Headers (`eyebrow-caps`):** Wide-tracked, uppercase botanical indicators (`letterSpacing: 0.18em`) styled in `#1F4D3A` at 85% opacity, standardizing navigation breadcrumbs (e.g., `02 · THE IDEA`).
+- **Metric Readouts (`stat-display`):** Prominent serif numerals designed for rapid scanning of sodium targets, saturated fat reductions, and flavor match percentages.
+
+## Layout & Spacing
+
+The layout is arranged around an open, sketchbook-style sequence grid. The design employs generous outer canvases that allow decorative spice flecks and organic recipe flow arrows to move between cards without overcrowding interactive elements.
+
+### Breakpoints & Grids
+- **Desktop (1024px+):** 12-column responsive layout with `margin: 2.5rem` and `gutter: 1.5rem`. Sequential workflows (e.g., 3-step or 5-step computational recipes) stretch horizontally with organic connector arrows positioned between card centers.
+- **Tablet (768px – 1023px):** 8-column layout. Multi-step workflows arrange into a 2-column or 3-column masonry grid.
+- **Mobile (<768px):** 4-column layout with `margin-mobile: 1.25rem`. Sequence cards reflow vertically with stacked arrows pointing downward. Touch targets maintain a minimum vertical height of 52px.
+
+## Elevation & Depth
+
+Rather than digital blurred dropshadows or glossy glass layers, depth reflects layered paper cutouts, recipe cards, and physical kitchen notebooks.
+
+### The Papercraft Depth Model
+- **Hard Border Base:** Every card, badge, and primary action features an ink outline: `2px solid #1F4D3A` for standard components, expanding to `2.5px solid #1F4D3A` on display containers.
+- **Tactile Paper Offset:** Elevation is achieved through soft, tinted directional offset drops:
+  - **Level 1 (Resting Cards):** `box-shadow: 2px 3px 0px rgba(31, 77, 58, 0.12), 0px 4px 12px rgba(31, 77, 58, 0.04);`
+  - **Level 2 (Interactive Hover / Priority Items):** `box-shadow: 3px 5px 0px rgba(31, 77, 58, 0.2), 0px 8px 16px rgba(31, 77, 58, 0.06);` translates `translateY(-2px)`.
+  - **Level 3 (Active Press / Pinned Card):** `box-shadow: 1px 1px 0px rgba(31, 77, 58, 0.25);` translates `translateY(2px)`.
+- **Organic Edge Treatments:** High-priority cards (hero cards, recipe outcome boxes) feature a subtle wobble border radius: `border-radius: 20px 24px 22px 26px / 24px 20px 26px 22px`, evoking hand-trimmed archival recipe paper.
+
+## Shapes
+
+The shape system prioritizes soft, tactile geometries that eliminate intimidating clinical hardness while retaining structure for dense computational data.
+
+- **Primary Geometry:** Base radius of `16px` (`rounded-lg`) applied to internal cards, medical criteria cards, and nutrition summary blocks.
+- **Step & Status Markers:** Strict circles (`border-radius: 50%`) with `2px solid #1F4D3A` ink borders and pure white or butter-yellow fills for numbered badges.
+- **Pill Containers:** Pill shape (`9999px`) reserved for top-level filter tags, database source tokens (e.g., RecipeDB, FlavorDB), and floating action capsules.
+
+## Components
+
+### 1. Sketchbook Step & Food Cards
+- **Structure:** Encased in a `2px solid #1F4D3A` outline, filled with pastel backgrounds (`#D8EFDF`, `#FFF0C5`, `#FFE0CE`, or `#D6E8F4`).
+- **Internal Padding:** `1.5rem` (`space-lg`) on desktop; `1.25rem` (`space-md`) on mobile.
+- **Badge Anchor:** Step numbers are displayed in a 36px circular badge anchored in the upper left corner featuring an ink border and bold serif/sans numerals (`badge-step`).
+- **Connector Arrows:** Hand-drawn line arrows with dynamic arrowheads bridge consecutive step cards.
+
+### 2. Buttons & Calls to Action
+- **Primary CTA:** Saffron Yellow fill (`#E8A33D`), text in `#1F4D3A`, `2px solid #1F4D3A` border, fully rounded pill (`border-radius: 9999px`) or `12px` rounded edges. Generous hit padding: `14px 28px`.
+- **Secondary Pill Button:** Parchment white fill (`#FFFFFF`), `1.5px solid #1F4D3A` border, label text in `#1F4D3A`, subtle offset shadow.
+- **Destructive / Reset Button:** Soft peach fill (`#FFE0CE`) with Terracotta ink (`#D94841`).
+
+### 3. Verification & Clinical Limit Checkers
+- **Safe Check Banner:** Mint-tinted banner (`#D8EFDF`) with a heavy outline, featuring a distinct vibrant green checkmark (`#2D8A4E`, stroke-width: 3.5px).
+- **Cut/Excluded Items Box:** Soft cream-peach card with an ink-drawn red X (`#D94841`, stroke-width: 3px) indicating clinical exclusions like sodium or dairy.
+- **Limit Progress Bar:** Track background in neutral parchment, filled with `#2D8A4E` (compliant) or `#E8A33D` (approaching limit), ending in a vertical target marker line in `#D94841` indicating strict clinical ceilings.
+
+### 4. Input Fields & Selectors
+- **Input Fields:** Crisp `#FFFFFF` surface with `2px solid #1F4D3A` border, minimum 48px height, padded with `0.75rem 1rem`. Focus state adds a soft butter-yellow outer aura (`0 0 0 3px #FFF0C5`).
+- **Checkboxes & Radios:** Hand-sketched styling with 24px × 24px bounds, `2px solid #1F4D3A` border, filling with `#2D8A4E` checkmark or `#E8A33D` centered dot when active.
+
+### 5. Nutrition Metric Panels
+- **Stat Cards:** 3-column modular cards with bold stat displays (`44px Domine`), accompanied by descriptive subtext ("versus the original", "Flavor Fidelity Score").
+- **Taped Photo Container:** Food preview photography framed with a polaroid-style white margin, ink outline, and an illustrative butter-yellow washi tape sticker accent pinned to the top border.
