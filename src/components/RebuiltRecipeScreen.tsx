@@ -10,16 +10,12 @@ import {
   Printer,
   ExternalLink,
   RotateCcw,
-  Clock,
-  Gauge,
-  Wallet,
   CheckCircle2,
   Info,
   Check,
   AlertTriangle,
   HelpCircle,
 } from 'lucide-react';
-import { SampleBadge } from './SampleBadge';
 import { CalculationModal } from './CalculationModal';
 import { RebuiltRecipeData, PLATFORM_STATS } from '../data/sampleData';
 
@@ -32,21 +28,16 @@ interface RebuiltRecipeScreenProps {
   onBackToDiet: () => void;
 }
 
+type TabType = 'swaps' | 'steps' | 'shopping' | 'details';
+
 export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
   recipe,
   allergies,
   onBackToBuild,
   onBackToDiet,
 }) => {
+  const [activeTab, setActiveTab] = useState<TabType>('swaps');
   const [expandedSwaps, setExpandedSwaps] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    const initial: Record<string, boolean> = {};
-    recipe.swaps.forEach((s) => {
-      initial[s.id] = true;
-    });
-    setExpandedSwaps(initial);
-  }, [recipe.swaps]);
   const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>({});
   const [isSaved, setIsSaved] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -57,12 +48,18 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
   const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
+    const initial: Record<string, boolean> = {};
+    recipe.swaps.forEach((s) => {
+      initial[s.id] = true;
+    });
+    setExpandedSwaps(initial);
+  }, [recipe.swaps]);
+
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(`flavor_bridge_saved_${recipe.dishId}`);
       if (saved) setIsSaved(true);
-    } catch {
-      // localStorage fallback
-    }
+    } catch {}
 
     return () => {
       if ('speechSynthesis' in window) {
@@ -85,30 +82,30 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
     }));
   };
 
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   const handleSaveRecipe = () => {
     try {
       const nextState = !isSaved;
       setIsSaved(nextState);
       if (nextState) {
         localStorage.setItem(`flavor_bridge_saved_${recipe.dishId}`, 'true');
-        showToast('Recipe saved to your browser notebook!');
+        showToast('Saved to your notebook!');
       } else {
         localStorage.removeItem(`flavor_bridge_saved_${recipe.dishId}`);
-        showToast('Recipe removed from saved notebook.');
+        showToast('Removed from saved.');
       }
     } catch {
-      showToast('Recipe bookmark updated!');
+      showToast('Bookmark updated.');
     }
-  };
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleShareWhatsApp = () => {
     const text = encodeURIComponent(
-      `Check out this rebuilt ${recipe.dishName} recipe on Flavor Bridge! Sodium: ${recipe.rebuiltSodiumMg}mg (sample estimate) with ${recipe.flavorMatchLabel}!`
+      `Check out rebuilt ${recipe.dishName} on Flavor Bridge! Sodium: ${recipe.rebuiltSodiumMg}mg (${recipe.flavorMatchLabel}).`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
@@ -117,10 +114,9 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
     window.print();
   };
 
-  // Browser speech synthesis to read the actual Butter Chicken steps
   const handleReadAloudToggle = () => {
     if (!('speechSynthesis' in window)) {
-      showToast('Speech synthesis is not supported on this browser.');
+      showToast('Speech not supported in browser.');
       return;
     }
 
@@ -139,25 +135,22 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
 
     synth.cancel();
 
-    const fullScript = `Rebuilt ${recipe.dishName} cooking steps. ` +
+    const fullScript = `${recipe.dishName} steps. ` +
       recipe.cookingSteps
-        .map((s) => `Step ${s.stepNumber}, approximately ${s.timeMinutes} minutes: ${s.instruction}`)
+        .map((s) => `Step ${s.stepNumber}, ${s.timeMinutes} minutes: ${s.instruction}`)
         .join('. ');
 
     const utterance = new SpeechSynthesisUtterance(fullScript);
     utterance.rate = 0.95;
-    utterance.pitch = 1.0;
 
     utterance.onstart = () => {
       setIsSpeaking(true);
       setIsPaused(false);
     };
-
     utterance.onend = () => {
       setIsSpeaking(false);
       setIsPaused(false);
     };
-
     utterance.onerror = () => {
       setIsSpeaking(false);
       setIsPaused(false);
@@ -174,566 +167,415 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
     }
   };
 
-  // Compute live shopping list total
   const shoppingListTotal = recipe.shoppingList.reduce((sum, item) => sum + item.estimatedPrice, 0);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 md:py-10">
+    <div className="max-w-3xl mx-auto px-4 py-5 md:py-8 pb-24 sm:pb-16">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 bg-[#193826] text-white dark:bg-[#1B2A23] dark:border-[1.5px] dark:border-[#3F6B57] dark:text-[#F1F6F2] px-4 py-2.5 rounded-xl border-2 border-[#FAF7F2] ink-shadow text-xs sm:text-sm font-bold flex items-center gap-2 animate-bounce">
-          <CheckCircle2 className="w-4 h-4 text-[#D8EFDF] dark:text-[#5FD39A]" />
+        <div className="fixed top-16 right-4 z-50 bg-[#193826] text-white dark:bg-[#1B2A23] dark:border dark:border-[#3F6B57] dark:text-[#F1F6F2] px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 animate-bounce ink-shadow">
+          <CheckCircle2 className="w-4 h-4 text-[#5FD39A]" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Screen Header with Sample Data Badge */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 no-print">
+      {/* Screen Header: Top dish name & quick back buttons */}
+      <div className="flex items-center justify-between gap-3 mb-4 no-print">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#D8EFDF] dark:bg-[#1B2A23] border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] text-[#193826] dark:text-[#BBCDC2]">
-              <Sparkles className="w-3.5 h-3.5 text-[#FF7B25] dark:text-[#FFB34D]" />
-              <span>Step 3: Rebuilt Recipe</span>
-            </span>
-            <SampleBadge />
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#193826] dark:text-[#F1F6F2] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#193826] dark:text-[#F1F6F2] tracking-tight">
             {recipe.dishName} (Rebuilt)
           </h1>
-          <p className="text-sm text-[#193826]/80 dark:text-[#BBCDC2] mt-1">
+          <p className="text-xs sm:text-sm text-[#193826]/75 dark:text-[#BBCDC2] mt-0.5">
             {recipe.tagline}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
-          <button
-            type="button"
-            onClick={() => setShowCalculationModal(true)}
-            aria-label="How we calculated this"
-            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#1B2A23] hover:bg-[#FFE0CE] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] text-[#193826] dark:text-[#FFB34D] transition-colors duration-150 cursor-pointer flex items-center gap-1.5 shadow-xs"
-          >
-            <HelpCircle className="w-3.5 h-3.5 text-[#FF7B25] dark:text-[#FFB34D]" />
-            <span>How we calculated this</span>
-          </button>
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={onBackToBuild}
-            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#FFE0CE] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] dark:hover:text-[#F1F6F2] text-[#193826] dark:text-[#BBCDC2] transition-colors duration-150 cursor-pointer flex items-center gap-1.5"
+            className="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#FFE0CE] dark:hover:bg-[#22332A] text-[#193826] dark:text-[#BBCDC2] cursor-pointer flex items-center gap-1"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Customize</span>
           </button>
           <button
             onClick={onBackToDiet}
-            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#D6E8F4] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] dark:hover:text-[#F1F6F2] text-[#193826] dark:text-[#BBCDC2] transition-colors duration-150 cursor-pointer"
+            className="text-xs font-bold px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#D6E8F4] dark:hover:bg-[#22332A] text-[#193826] dark:text-[#BBCDC2] cursor-pointer"
           >
-            Diet Profile
+            Diet
           </button>
         </div>
       </div>
 
-      {/* Print only Header */}
-      <div className="hidden print:block mb-4 pb-2 border-b">
-        <h1 className="text-2xl font-serif font-bold text-black">{recipe.dishName} — Flavor Bridge Recipe Guide</h1>
-        <p className="text-xs text-gray-700">{recipe.disclaimer}</p>
-      </div>
-
-      {/* Red Sodium Limit Warning Banner if salt kept */}
-      {recipe.isSodiumOverLimit && (
-        <div className="mb-6 p-4 rounded-2xl bg-red-50 dark:bg-[#241618] border-2 border-red-500 dark:border-[1.5px] dark:border-[#FF8A80] text-red-950 dark:text-[#FF8A80] ink-shadow flex items-start gap-3 animate-in fade-in duration-200">
-          <div className="w-9 h-9 rounded-xl bg-red-600 dark:bg-[#FF8A80] text-white dark:text-[#1A1200] flex items-center justify-center shrink-0 mt-0.5">
-            <AlertTriangle className="w-5 h-5" />
-          </div>
-          <div className="flex-1">
-            <div className="flex flex-wrap items-center gap-2 mb-0.5">
-              <span className="font-serif font-bold text-base text-red-900 dark:text-[#FF8A80]">
-                {recipe.sodiumWarning || 'Over your 350 mg limit'}
-              </span>
-              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-red-200 dark:bg-[#34171A] text-red-900 dark:text-[#FF8A80] border border-red-300 dark:border-[#FF8A80]/40">
-                Sample estimate
+      {/* 1. ONE SUMMARY CARD */}
+      <div className="mb-4 rounded-2xl border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 mb-3 border-b border-[#193826]/10 dark:border-[#3F6B57]/40">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#FF7B25] dark:text-[#FFB34D] block">
+              Sodium Rebuild
+            </span>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#193826] dark:text-[#F1F6F2]">
+                {recipe.originalSodiumMg} mg to {recipe.rebuiltSodiumMg} mg
               </span>
             </div>
-            <p className="text-xs text-red-800 dark:text-[#BBCDC2] leading-relaxed font-medium">
-              Because original refined table salt was kept (+{recipe.saltPenaltyMg ?? 520} mg sodium sample estimate), the total rebuilt sodium reaches <strong className="text-red-900 dark:text-[#F1F6F2]">{recipe.rebuiltSodiumMg} mg</strong> ({recipe.sodiumLimitPercentage}% of your {recipe.limitSodiumMg} mg limit). To stay under limit, toggle &quot;Refined table salt&quot; back on in Step 2.
-            </p>
           </div>
-        </div>
-      )}
 
-      {/* BEFORE VS AFTER CARD */}
-      <div className="mb-6 rounded-2xl border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow overflow-hidden">
-        <div className="p-4 sm:p-5 bg-[#193826] dark:bg-[#101A14] dark:border-b dark:border-[#3F6B57] text-[#FAF7F2] dark:text-[#F1F6F2] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <span className="text-[11px] uppercase tracking-wider font-bold text-[#FF7B25] dark:text-[#FFB34D] block">
-              Aroma Match Rebuild
-            </span>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold">
-              Before vs. After Profile
-            </h2>
-          </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            {/* Requirement 4: Show "94% Flavor Match (sample)" until live data is connected */}
-            <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-[#D8EFDF] text-[#193826] dark:bg-[#1B2A23] dark:text-[#5FD39A] border border-white dark:border-[#3F6B57]">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#D8EFDF] text-[#193826] dark:bg-[#1B2A23] dark:text-[#5FD39A] border border-[#193826]/30 dark:border-[#3F6B57]">
               {recipe.flavorMatchLabel}
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x-2 divide-[#193826] dark:divide-[#3F6B57]">
-          {/* Before Column (Traditional side = #241618 background with #FF8A80 accent & red bar) */}
-          <div className="p-4 sm:p-5 bg-[#FFE0CE]/40 dark:bg-[#241618]">
-            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 mb-3">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-red-900 bg-red-100 dark:bg-[#34171A] dark:text-[#FF8A80] px-2.5 py-0.5 rounded-md border border-red-300 dark:border-[#FF8A80]/40">
-                Traditional Recipe
-              </span>
-              <span className="text-xs font-bold text-red-800 dark:text-[#FF8A80]">
-                {recipe.sodiumLimitComparison}
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-xs font-bold text-[#193826] dark:text-[#F1F6F2] mb-1">
-                  <span>Sodium Content (Sample estimate)</span>
-                  <span className="text-red-700 dark:text-[#FF8A80] text-sm font-extrabold">{recipe.originalSodiumMg} mg</span>
-                </div>
-                <div className="w-full h-3 bg-red-100 dark:bg-[#34171A] rounded-full border border-red-300 dark:border-[#FF8A80]/30 overflow-hidden">
-                  <div className="h-full bg-red-500 dark:bg-[#FF8A80] rounded-full" style={{ width: '100%' }} />
-                </div>
-                <span className="text-[11px] text-red-700 dark:text-[#FF8A80] font-medium mt-0.5 block">
-                  Original recipe exceeds normal target limit ({recipe.limitSodiumMg} mg)
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#193826]/10 dark:border-[#3F6B57]/30 text-xs">
-                <div>
-                  <span className="text-[#193826]/70 dark:text-[#8FA89A] block font-semibold">Saturated Fat</span>
-                  <span className="font-bold text-[#193826] dark:text-[#F1F6F2] text-sm">{recipe.originalSatFatG} g</span>
-                </div>
-                <div>
-                  <span className="text-[#193826]/70 dark:text-[#8FA89A] block font-semibold">Added Sugar</span>
-                  <span className="font-bold text-[#193826] dark:text-[#F1F6F2] text-sm">{recipe.originalAddedSugarG.toFixed(1)} g</span>
-                </div>
-              </div>
-
-              <div className="text-[11px] text-[#193826]/70 dark:text-[#8FA89A] font-medium">
-                Traditional ingredients: {recipe.originalIngredients.join(', ')}.
-              </div>
-            </div>
+        {/* Sodium Progress Bar */}
+        <div className="mb-3">
+          <div className="w-full h-3 rounded-full border border-[#193826]/30 dark:border-[#3F6B57] bg-emerald-100 dark:bg-[#17382B] overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${
+                recipe.isSodiumOverLimit ? 'bg-red-600 dark:bg-[#FF8A80]' : 'bg-emerald-500 dark:bg-[#5FD39A]'
+              }`}
+              style={{ width: `${Math.min(100, recipe.sodiumLimitPercentage)}%` }}
+            />
           </div>
 
-          {/* After Column (Rebuilt side = #12281F background with #5FD39A accent & green bar) */}
-          <div className="p-4 sm:p-5 bg-[#D8EFDF]/40 dark:bg-[#12281F]">
-            <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 mb-3">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-900 bg-[#D8EFDF] dark:bg-[#17382B] dark:text-[#5FD39A] px-2.5 py-0.5 rounded-md border border-emerald-600 dark:border-[#5FD39A]/40">
-                Flavor Bridge Rebuilt
-              </span>
-              <span className="text-xs font-bold text-emerald-800 dark:text-[#5FD39A]">
-                {PLATFORM_STATS.scienceNotice} (sample estimates)
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-xs font-bold text-[#193826] dark:text-[#F1F6F2] mb-1">
-                  <span>Sodium (Target Limit: {recipe.limitSodiumMg} mg)</span>
-                  <span className={`text-sm font-extrabold flex items-center gap-1.5 ${
-                    recipe.isSodiumOverLimit ? 'text-red-700 dark:text-[#FF8A80]' : 'text-emerald-800 dark:text-[#5FD39A]'
-                  }`}>
-                    {recipe.rebuiltSodiumMg} mg
-                    <span className="text-xs font-semibold">({recipe.sodiumLimitPercentage}%)</span>
-                  </span>
-                </div>
-
-                {/* Sodium bar strictly reflecting calculated sodium relative to 350 mg limit */}
-                <div className={`relative w-full h-3 rounded-full border overflow-hidden ${
-                  recipe.isSodiumOverLimit ? 'bg-red-100 dark:bg-[#34171A] border-red-400 dark:border-[#FF8A80]/40' : 'bg-emerald-100 dark:bg-[#17382B] border-emerald-400 dark:border-[#5FD39A]/40'
-                }`}>
-                  <div
-                    className={`h-full rounded-full transition-all duration-700 ${
-                      recipe.isSodiumOverLimit ? 'bg-red-600 dark:bg-[#FF8A80]' : 'bg-emerald-500 dark:bg-[#5FD39A]'
-                    }`}
-                    style={{ width: `${Math.min(100, recipe.sodiumLimitPercentage)}%` }}
-                  />
-                </div>
-
-                <div className="flex justify-between text-[11px] font-semibold mt-0.5">
-                  <span className={recipe.isSodiumOverLimit ? 'text-red-800 dark:text-[#FF8A80] font-bold' : 'text-emerald-800 dark:text-[#5FD39A]'}>
-                    {recipe.rebuiltSodiumMg} mg / {recipe.limitSodiumMg} mg limit
-                  </span>
-                  {recipe.isSodiumOverLimit ? (
-                    <span className="text-red-700 dark:text-[#FF8A80] font-bold uppercase tracking-wider">
-                      Over your 350 mg limit
-                    </span>
-                  ) : (
-                    <span className="text-emerald-800 dark:text-[#5FD39A]">
-                      Safe room: {recipe.limitSodiumMg - recipe.rebuiltSodiumMg} mg
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#193826]/10 dark:border-[#3F6B57]/30 text-xs">
-                <div>
-                  <span className="text-[#193826]/70 dark:text-[#8FA89A] block font-semibold">Saturated Fat</span>
-                  <span className="font-bold text-emerald-800 dark:text-[#5FD39A] text-sm">
-                    {recipe.rebuiltSatFatG} g{' '}
-                    {recipe.satFatReductionPercent > 0 && (
-                      <span className="text-[10px] text-emerald-700 dark:text-[#8FE3B6] font-extrabold">
-                        (-{recipe.satFatReductionPercent}%)
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[#193826]/70 dark:text-[#8FA89A] block font-semibold">Added Sugar</span>
-                  <span className="font-bold text-emerald-800 dark:text-[#5FD39A] text-sm">
-                    {recipe.rebuiltAddedSugarG.toFixed(1)} g{' '}
-                    {recipe.rebuiltAddedSugarG < recipe.originalAddedSugarG && (
-                      <span className="text-[10px] text-emerald-700 dark:text-[#8FE3B6] font-extrabold">
-                        (-{Math.round(((recipe.originalAddedSugarG - recipe.rebuiltAddedSugarG) / recipe.originalAddedSugarG) * 100)}%)
-                      </span>
-                    )}
-                  </span>
-                </div>
-              </div>
-
-              <div className="text-[11px] text-[#193826]/80 dark:text-[#BBCDC2] font-medium flex flex-wrap gap-x-2 gap-y-0.5">
-                {recipe.swaps.map((s) => (
-                  <span key={s.id}>
-                    {s.isRebuilt !== false ? `✓ ${s.rebuiltIngredient}` : `⚠ ${s.originalIngredient} kept`}
-                  </span>
-                ))}
-              </div>
-            </div>
+          {/* One-Line Verdict */}
+          <div className="flex items-center justify-between text-xs mt-1 font-semibold">
+            <span className={recipe.isSodiumOverLimit ? 'text-red-700 dark:text-[#FF8A80] font-bold' : 'text-emerald-800 dark:text-[#5FD39A]'}>
+              {recipe.isSodiumOverLimit ? 'Over your 350 mg limit' : 'Within your 350 mg limit'}
+            </span>
+            <span className="text-[#193826]/70 dark:text-[#8FA89A]">
+              {recipe.rebuiltSodiumMg} mg / {recipe.limitSodiumMg} mg target
+            </span>
           </div>
         </div>
 
-        {recipe.keptIngredients.length > 0 && (
-          <div className="p-3 bg-[#FFF0C5] dark:bg-[#1B2A23] border-t-2 border-[#193826] dark:border-t-[1.5px] dark:border-[#3F6B57] text-xs font-semibold text-[#193826] dark:text-[#BBCDC2] flex items-center gap-2">
-            <Info className="w-4 h-4 text-[#FF7B25] dark:text-[#FFB34D] shrink-0" />
-            <span>
-              <strong className="text-[#193826] dark:text-[#F1F6F2]">Sample estimates applied for kept ingredients:</strong> {recipe.keptIngredients.join(', ')} retained original formulation.
-            </span>
+        {/* Saturated Fat & Added Sugar as two small numbers beside it */}
+        <div className="flex items-center gap-4 pt-2 border-t border-[#193826]/10 dark:border-[#3F6B57]/30 text-xs text-[#193826]/80 dark:text-[#BBCDC2]">
+          <div>
+            <span className="font-semibold text-[#193826]/60 dark:text-[#8FA89A]">Sat fat: </span>
+            <strong className="text-[#193826] dark:text-[#F1F6F2]">{recipe.originalSatFatG}g → {recipe.rebuiltSatFatG}g</strong>
+            {recipe.satFatReductionPercent > 0 && (
+              <span className="text-[10px] text-emerald-700 dark:text-[#5FD39A] font-bold ml-1">
+                (-{recipe.satFatReductionPercent}%)
+              </span>
+            )}
+          </div>
+          <div>
+            <span className="font-semibold text-[#193826]/60 dark:text-[#8FA89A]">Added sugar: </span>
+            <strong className="text-[#193826] dark:text-[#F1F6F2]">{recipe.originalAddedSugarG.toFixed(1)}g → {recipe.rebuiltAddedSugarG.toFixed(1)}g</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. ONE ROW BELOW: Cost, Difficulty, Time as small inline items (not big cards) */}
+      <div className="mb-5 p-3 rounded-xl border border-[#193826]/30 dark:border-[#3F6B57] bg-[#FAF7F2] dark:bg-[#1B2A23] flex items-center justify-between text-xs font-bold text-[#193826] dark:text-[#BBCDC2]">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[#193826]/60 dark:text-[#8FA89A]">Cost:</span>
+          <span className="dark:text-[#F1F6F2]">Rs {recipe.costPerServing} / serving</span>
+        </div>
+        <span className="text-[#193826]/40 dark:text-[#3F6B57]">•</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[#193826]/60 dark:text-[#8FA89A]">Difficulty:</span>
+          <span className="dark:text-[#F1F6F2]">{recipe.difficulty}</span>
+        </div>
+        <span className="text-[#193826]/40 dark:text-[#3F6B57]">•</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[#193826]/60 dark:text-[#8FA89A]">Time:</span>
+          <span className="dark:text-[#F1F6F2]">{recipe.estimatedTimeMins} mins</span>
+        </div>
+      </div>
+
+      {/* 3. FOUR TABS WITH ONLY FIRST OPEN (Swaps, Cooking steps, Shopping list, Details) */}
+      <div className="mb-6 rounded-2xl border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow overflow-hidden">
+        {/* Tab Header Bar */}
+        <div className="flex border-b-2 border-[#193826] dark:border-[#3F6B57] bg-[#FAF7F2] dark:bg-[#101A15]" role="tablist">
+          {[
+            { id: 'swaps', label: 'Swaps' },
+            { id: 'steps', label: 'Cooking steps' },
+            { id: 'shopping', label: 'Shopping list' },
+            { id: 'details', label: 'Details' },
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveTab(tab.id as TabType)}
+                className={`flex-1 py-2.5 px-2 text-center text-xs sm:text-sm font-bold transition-colors cursor-pointer border-r border-[#193826]/20 dark:border-[#3F6B57] last:border-r-0 ${
+                  isActive
+                    ? 'bg-[#FF7B25] text-white dark:bg-[#FFB34D] dark:text-[#1A1200]'
+                    : 'text-[#193826]/75 dark:text-[#BBCDC2] hover:bg-white/60 dark:hover:bg-[#1B2A23]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Tab 1: Swaps (Plain language: same smell, less salt and fat) */}
+        {activeTab === 'swaps' && (
+          <div className="p-4 sm:p-5 space-y-3">
+            <p className="text-xs text-[#193826]/80 dark:text-[#BBCDC2] mb-2 font-medium">
+              Natural swaps that give you the same smell, with less salt and fat.
+            </p>
+            {recipe.swaps.map((swap) => {
+              const isExpanded = !!expandedSwaps[swap.id];
+              return (
+                <div
+                  key={swap.id}
+                  className="rounded-xl border border-[#193826]/30 dark:border-[#3F6B57] bg-[#FAF7F2] dark:bg-[#1B2A23] overflow-hidden"
+                >
+                  <div
+                    onClick={() => toggleSwapExpand(swap.id)}
+                    className="p-3 flex items-center justify-between gap-2 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5"
+                  >
+                    <div className="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm font-bold text-[#193826] dark:text-[#F1F6F2]">
+                      <span className="line-through text-red-700 dark:text-[#FF8A80]">
+                        {swap.originalIngredient}
+                      </span>
+                      <span className="text-xs text-[#193826]/60 dark:text-[#8FA89A]">→</span>
+                      <span className="text-emerald-800 dark:text-[#5FD39A]">
+                        {swap.rebuiltIngredient}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="text-xs text-[#193826]/70 dark:text-[#BBCDC2] flex items-center gap-0.5"
+                    >
+                      <span>{isExpanded ? 'Hide' : 'Why'}</span>
+                      {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="px-3 pb-3 pt-1 text-xs text-[#193826]/85 dark:text-[#BBCDC2] leading-relaxed border-t border-[#193826]/10 dark:border-[#3F6B57]/40 bg-white dark:bg-[#15211B]">
+                      {swap.whyThisWorks}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Tab 2: Cooking Steps */}
+        {activeTab === 'steps' && (
+          <div className="p-4 sm:p-5 space-y-3">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-xs font-bold text-[#193826]/80 dark:text-[#BBCDC2]">
+                Check items as you cook
+              </span>
+              <button
+                type="button"
+                onClick={handleReadAloudToggle}
+                className="text-xs font-bold px-2.5 py-1 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#D6E8F4] dark:bg-[#1B2A23] text-[#193826] dark:text-[#7CC4F0] flex items-center gap-1 cursor-pointer"
+              >
+                <Volume2 className="w-3.5 h-3.5" />
+                <span>{isSpeaking ? (isPaused ? 'Resume' : 'Pause') : 'Read aloud'}</span>
+              </button>
+            </div>
+
+            {recipe.cookingSteps.map((step) => {
+              const isDone = !!completedSteps[step.stepNumber];
+              return (
+                <div
+                  key={step.stepNumber}
+                  onClick={() => toggleStepCompleted(step.stepNumber)}
+                  className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                    isDone
+                      ? 'bg-emerald-50 dark:bg-[#12281F] border-emerald-600 dark:border-[#5FD39A] opacity-80'
+                      : 'bg-[#FAF7F2] dark:bg-[#1B2A23] border-[#193826]/30 dark:border-[#3F6B57]'
+                  }`}
+                >
+                  <div className="flex items-start gap-2.5">
+                    <div
+                      className={`w-5 h-5 rounded border border-[#193826] dark:border-[#3F6B57] flex items-center justify-center shrink-0 mt-0.5 ${
+                        isDone ? 'bg-[#193826] dark:bg-[#5FD39A] text-white dark:text-[#1A1200]' : 'bg-white dark:bg-[#101A15]'
+                      }`}
+                    >
+                      {isDone && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <strong className="text-xs font-serif text-[#193826] dark:text-[#F1F6F2]">
+                          Step {step.stepNumber}
+                        </strong>
+                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-black/5 dark:bg-white/10 text-[#193826] dark:text-[#FFB34D]">
+                          {step.timeMinutes}m
+                        </span>
+                      </div>
+                      <p className={`text-xs text-[#193826] dark:text-[#BBCDC2] leading-relaxed ${isDone ? 'line-through opacity-70' : ''}`}>
+                        {step.instruction}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Tab 3: Shopping List */}
+        {activeTab === 'shopping' && (
+          <div className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <span className="text-xs text-[#193826]/75 dark:text-[#BBCDC2]">
+                Total basket estimate:
+              </span>
+              <strong className="font-serif text-lg text-[#193826] dark:text-[#FFB34D]">
+                ₹{shoppingListTotal}
+              </strong>
+            </div>
+
+            <div className="divide-y divide-[#193826]/10 dark:divide-[#3F6B57]/40 border rounded-xl overflow-hidden bg-white dark:bg-[#101A15] border-[#193826]/20 dark:border-[#3F6B57]">
+              {recipe.shoppingList.map((item) => (
+                <div key={item.id} className="p-2.5 sm:p-3 flex items-center justify-between gap-2">
+                  <div>
+                    <span className="text-xs sm:text-sm font-bold text-[#193826] dark:text-[#F1F6F2] block">
+                      {item.name}
+                    </span>
+                    <span className="text-[11px] text-[#193826]/70 dark:text-[#BBCDC2]">
+                      {item.quantity} • ₹{item.estimatedPrice}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <a
+                      href={`https://www.amazon.in/s?k=${encodeURIComponent(item.searchQuery)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2 py-1 rounded border border-[#193826]/40 dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#1B2A23] text-[10px] font-bold text-[#193826] dark:text-[#FFB34D] flex items-center gap-0.5"
+                    >
+                      <span>Amazon</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                    <a
+                      href={`https://www.flipkart.com/search?q=${encodeURIComponent(item.searchQuery)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2 py-1 rounded border border-[#193826]/40 dark:border-[#3F6B57] bg-[#D6E8F4] dark:bg-[#1B2A23] text-[10px] font-bold text-[#193826] dark:text-[#7CC4F0] flex items-center gap-0.5"
+                    >
+                      <span>Flipkart</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 4: Details */}
+        {activeTab === 'details' && (
+          <div className="p-4 sm:p-5 space-y-3.5 text-xs text-[#193826]/85 dark:text-[#BBCDC2]">
+            <div className="p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1B2A23] border border-[#193826]/20 dark:border-[#3F6B57]">
+              <strong className="block text-sm font-serif text-[#193826] dark:text-[#F1F6F2] mb-1">
+                Before vs. After Full Comparison
+              </strong>
+              <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                <div>
+                  <span className="text-[#193826]/60 dark:text-[#8FA89A] block">Traditional</span>
+                  <p>Sodium: {recipe.originalSodiumMg} mg</p>
+                  <p>Sat fat: {recipe.originalSatFatG} g</p>
+                  <p>Sugar: {recipe.originalAddedSugarG.toFixed(1)} g</p>
+                </div>
+                <div>
+                  <span className="text-emerald-800 dark:text-[#5FD39A] block font-bold">Rebuilt</span>
+                  <p>Sodium: {recipe.rebuiltSodiumMg} mg</p>
+                  <p>Sat fat: {recipe.rebuiltSatFatG} g</p>
+                  <p>Sugar: {recipe.rebuiltAddedSugarG.toFixed(1)} g</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <strong className="block font-semibold mb-1 text-[#193826] dark:text-[#F1F6F2]">
+                Traditional Ingredients:
+              </strong>
+              <p className="leading-relaxed">
+                {recipe.originalIngredients.join(', ')}.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setShowCalculationModal(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#193826] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#1B2A23] text-xs font-bold text-[#193826] dark:text-[#FFB34D] cursor-pointer"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-[#FF7B25] dark:text-[#FFB34D]" />
+                <span>How we calculated this</span>
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      {/* QUICK STATS ROW: SAME CARD SURFACE (#15211B), COLORED ICON CHIP, 3PX COLORED TOP BORDER */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-        {/* Card 1: Estimated Cost (saffron top border) */}
-        <div className="p-4 rounded-xl border-2 border-[#193826] bg-[#FFF0C5] dark:bg-[#15211B] dark:border-[1.5px] dark:border-[#3F6B57] dark:border-t-[3px] dark:border-t-[#FFB34D] ink-shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white dark:bg-[#22332A] border border-[#193826] dark:border-[#3F6B57] flex items-center justify-center shrink-0">
-            <Wallet className="w-5 h-5 text-[#FF7B25] dark:text-[#FFB34D]" />
-          </div>
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 dark:text-[#8FA89A] block">
-              Estimated Cost
-            </span>
-            <span className="font-serif text-lg font-bold text-[#193826] dark:text-[#F1F6F2] block leading-tight">
-              Rs {recipe.costPerServing} / serving
-            </span>
-          </div>
-        </div>
-
-        {/* Card 2: Difficulty (mint top border) */}
-        <div className="p-4 rounded-xl border-2 border-[#193826] bg-[#D8EFDF] dark:bg-[#15211B] dark:border-[1.5px] dark:border-[#3F6B57] dark:border-t-[3px] dark:border-t-[#5FD39A] ink-shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white dark:bg-[#22332A] border border-[#193826] dark:border-[#3F6B57] flex items-center justify-center shrink-0">
-            <Gauge className="w-5 h-5 text-emerald-700 dark:text-[#5FD39A]" />
-          </div>
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 dark:text-[#8FA89A] block">
-              Difficulty
-            </span>
-            <span className="font-serif text-lg font-bold text-[#193826] dark:text-[#F1F6F2] block leading-tight">
-              {recipe.difficulty}
-            </span>
-          </div>
-        </div>
-
-        {/* Card 3: Estimated Time (sky top border #7CC4F0) */}
-        <div className="p-4 rounded-xl border-2 border-[#193826] bg-[#D6E8F4] dark:bg-[#15211B] dark:border-[1.5px] dark:border-[#3F6B57] dark:border-t-[3px] dark:border-t-[#7CC4F0] ink-shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white dark:bg-[#22332A] border border-[#193826] dark:border-[#3F6B57] flex items-center justify-center shrink-0">
-            <Clock className="w-5 h-5 text-sky-800 dark:text-[#7CC4F0]" />
-          </div>
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 dark:text-[#8FA89A] block">
-              Estimated Time
-            </span>
-            <span className="font-serif text-lg font-bold text-[#193826] dark:text-[#F1F6F2] block leading-tight">
-              {recipe.estimatedTimeMins} mins
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* SMELL-TWIN SWAPS */}
-      <div className="mb-6 p-5 sm:p-6 rounded-2xl border-2 border-[#193826] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow">
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-5 h-5 text-[#FF7B25] dark:text-[#FFB34D]" />
-          <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#193826] dark:text-[#F1F6F2]">
-            Smell-Twin Aroma Swaps
-          </h2>
-        </div>
-        <p className="text-xs sm:text-sm text-[#193826]/80 dark:text-[#BBCDC2] mb-4 font-medium">
-          Culinary aroma science matches volatilized flavor twins so your palate experiences traditional indulgence without high sodium or saturated fat.
-        </p>
-
-        <div className="space-y-3.5">
-          {recipe.swaps.map((swap) => {
-            const isExpanded = !!expandedSwaps[swap.id];
-            return (
-              <div
-                key={swap.id}
-                className="rounded-xl border-2 border-[#193826] dark:border-[#3F6B57] bg-[#FAF7F2] dark:bg-[#1B2A23] overflow-hidden transition-all"
-              >
-                <div
-                  onClick={() => toggleSwapExpand(swap.id)}
-                  className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-[#FFF0C5]/40 dark:hover:bg-[#22332A] transition-colors"
-                >
-                  <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-[#193826] dark:text-[#F1F6F2]">
-                    <span className="line-through text-red-700 dark:text-[#FF8A80] bg-red-100 dark:bg-[#241618] px-2 py-0.5 rounded border border-red-300 dark:border-red-900/60">
-                      {swap.originalIngredient}
-                    </span>
-                    <span className="text-xs text-[#193826]/50 dark:text-[#8FA89A]">swapped with</span>
-                    <span className={`px-2.5 py-0.5 rounded border ${
-                      swap.isRebuilt !== false
-                        ? 'text-emerald-800 dark:text-[#5FD39A] bg-[#D8EFDF] dark:bg-[#12281F] border-emerald-600 dark:border-[#5FD39A]/40'
-                        : 'text-amber-900 dark:text-[#FFC857] bg-[#FFF0C5] dark:bg-[#3A3320] border-amber-600 dark:border-[#FFC857]/40'
-                    }`}>
-                      {swap.rebuiltIngredient}
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="self-end sm:self-center text-xs font-bold text-[#193826] dark:text-[#BBCDC2] flex items-center gap-1 hover:text-[#FF7B25] dark:hover:text-[#FFB34D]"
-                  >
-                    <span>{isExpanded ? 'Hide why this works' : 'Why this works'}</span>
-                    {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  </button>
-                </div>
-
-                {isExpanded && (
-                  <div className="px-4 pb-4 pt-1 bg-white dark:bg-[#15211B] border-t border-[#193826]/20 dark:border-[#3F6B57]/50">
-                    <div className="p-3 rounded-lg bg-[#FFF0C5]/60 dark:bg-[#101A15] border border-[#193826]/30 dark:border-[#3F6B57] text-xs text-[#193826] dark:text-[#BBCDC2] leading-relaxed">
-                      {/* Requirement 3: Label each Aroma Twin Explanation as Sample explanation */}
-                      <strong className="block text-[#FF7B25] dark:text-[#FFB34D] mb-1 uppercase tracking-wider text-[10px] font-extrabold">
-                        Sample explanation
-                      </strong>
-                      <p>{swap.whyThisWorks}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 3 COOKING STEPS WITH TIMES */}
-      <div className="mb-6 p-5 sm:p-6 rounded-2xl border-2 border-[#193826] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#193826] dark:text-[#F1F6F2]">
-              Cooking Steps ({recipe.cookingSteps.length} Steps • {recipe.estimatedTimeMins} mins)
-            </h2>
-            <p className="text-xs text-[#193826]/75 dark:text-[#BBCDC2]">
-              Click checkboxes as you complete each phase.
-            </p>
-          </div>
-
-          {/* Read aloud controls */}
-          <div className="flex items-center gap-2 no-print">
-            <button
-              onClick={handleReadAloudToggle}
-              className={`px-3 py-1.5 rounded-lg border-2 border-[#193826] dark:border-[#3F6B57] text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                isSpeaking
-                  ? isPaused
-                    ? 'bg-[#FFF0C5] dark:bg-[#1B2A23] text-[#193826] dark:text-[#FFB34D]'
-                    : 'bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] animate-pulse'
-                  : 'bg-[#D6E8F4] dark:bg-[#1B2A23] text-[#193826] dark:text-[#7CC4F0] hover:bg-[#bce0f8] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283]'
-              }`}
-            >
-              <Volume2 className="w-3.5 h-3.5" />
-              <span>{isSpeaking ? (isPaused ? 'Resume voice' : 'Pause voice') : 'Read aloud'}</span>
-            </button>
-            {isSpeaking && (
-              <button
-                onClick={handleStopSpeech}
-                title="Stop reading aloud"
-                className="p-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-red-100 dark:bg-[#241618] text-red-700 dark:text-[#FF8A80] hover:bg-red-200 dark:hover:bg-[#34171A] cursor-pointer"
-              >
-                <VolumeX className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          {recipe.cookingSteps.map((step) => {
-            const isDone = !!completedSteps[step.stepNumber];
-            return (
-              <div
-                key={step.stepNumber}
-                onClick={() => toggleStepCompleted(step.stepNumber)}
-                className={`p-4 rounded-xl border-2 transition-all duration-150 cursor-pointer ${
-                  isDone
-                    ? 'bg-[#D8EFDF]/50 dark:bg-[#12281F] border-emerald-700 dark:border-[#5FD39A] opacity-90'
-                    : 'bg-[#FAF7F2] dark:bg-[#1B2A23] border-[#193826] dark:border-[#3F6B57] hover:bg-white dark:hover:bg-[#22332A] dark:hover:border-[#5FA283]'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className={`w-6 h-6 rounded-md border-2 border-[#193826] dark:border-[#3F6B57] flex items-center justify-center shrink-0 mt-0.5 ${
-                      isDone ? 'bg-[#193826] dark:bg-[#5FD39A] text-white dark:text-[#1A1200]' : 'bg-white dark:bg-[#101A15]'
-                    }`}
-                  >
-                    {isDone ? <Check className="w-4 h-4 stroke-[3]" /> : null}
-                  </div>
-
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-serif text-sm font-bold text-[#193826] dark:text-[#F1F6F2]">
-                        Step {step.stepNumber}
-                      </span>
-                      <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-[#FFF0C5] dark:bg-[#101A15] border border-[#193826] dark:border-[#3F6B57] text-[#193826] dark:text-[#FFB34D]">
-                        {step.timeMinutes} mins
-                      </span>
-                    </div>
-                    <p className={`text-xs sm:text-sm text-[#193826] dark:text-[#BBCDC2] leading-relaxed ${isDone ? 'line-through opacity-75' : ''}`}>
-                      {step.instruction}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* SHOPPING LIST WITH LIVE ESTIMATED TOTAL AND AMAZON / FLIPKART LINKS */}
-      <div className="mb-6 p-5 sm:p-6 rounded-2xl border-2 border-[#193826] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] ink-shadow">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-          <div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#193826] dark:text-[#F1F6F2]">
-              Rebuilt Shopping List
-            </h2>
-            <p className="text-xs text-[#193826]/75 dark:text-[#BBCDC2]">
-              Items tailored to aroma replacements (prices based on average grocery basket).
-            </p>
-          </div>
-
-          <div className="p-2.5 rounded-xl bg-[#FFF0C5] dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] text-right self-start sm:self-auto">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#193826]/70 dark:text-[#8FA89A] block">
-              Estimated price
-            </span>
-            <span className="font-serif text-xl font-bold text-[#193826] dark:text-[#FFB34D]">
-              ₹{shoppingListTotal}
-            </span>
-          </div>
-        </div>
-
-        <div className="divide-y divide-[#193826]/20 dark:divide-[#3F6B57] border-2 border-[#193826] dark:border-[#3F6B57] rounded-xl overflow-hidden bg-white dark:bg-[#101A15]">
-          {recipe.shoppingList.map((item) => (
-            <div
-              key={item.id}
-              className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#FAF7F2] dark:hover:bg-[#1B2A23] transition-colors"
-            >
-              <div>
-                <span className="font-bold text-sm text-[#193826] dark:text-[#F1F6F2] block">
-                  {item.name}
-                </span>
-                <span className="text-xs text-[#193826]/70 dark:text-[#BBCDC2]">
-                  {item.quantity} • Estimated ₹{item.estimatedPrice}
-                </span>
-              </div>
-
-              {/* Amazon and Flipkart buttons */}
-              <div className="flex items-center gap-2 self-start sm:self-center no-print">
-                <a
-                  href={`https://www.amazon.in/s?k=${encodeURIComponent(item.searchQuery)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#1B2A23] hover:bg-[#ffe394] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] text-xs font-bold text-[#193826] dark:text-[#FFB34D] flex items-center gap-1 transition-colors duration-150 cursor-pointer"
-                >
-                  <span>Amazon</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-
-                <a
-                  href={`https://www.flipkart.com/search?q=${encodeURIComponent(item.searchQuery)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#D6E8F4] dark:bg-[#1B2A23] hover:bg-[#b5dbf7] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] text-xs font-bold text-[#193826] dark:text-[#7CC4F0] flex items-center gap-1 transition-colors duration-150 cursor-pointer"
-                >
-                  <span>Flipkart</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ACTION BUTTONS ROW */}
-      <div className="p-5 rounded-2xl bg-[#FFE0CE] dark:bg-[#15211B] border-2 border-[#193826] dark:border-[#3F6B57] ink-shadow mb-8 no-print">
-        <h3 className="font-serif text-lg font-bold text-[#193826] dark:text-[#F1F6F2] mb-3">
-          Recipe Actions &amp; Sharing
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      {/* Desktop Actions Bar */}
+      <div className="hidden sm:flex items-center justify-between gap-2.5 p-3 rounded-2xl bg-[#FFE0CE]/50 dark:bg-[#15211B] border border-[#193826]/30 dark:border-[#3F6B57] mb-4 no-print">
+        <span className="text-xs font-bold text-[#193826] dark:text-[#BBCDC2]">
+          Actions:
+        </span>
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleShareWhatsApp}
-            className="p-3 rounded-xl bg-white dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm text-[#193826] dark:text-[#5FD39A] hover:bg-[#D8EFDF] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] transition-colors duration-150 cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
+            className="px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-white dark:bg-[#1B2A23] text-xs font-bold text-[#193826] dark:text-[#5FD39A] hover:bg-[#D8EFDF] flex items-center gap-1.5 cursor-pointer"
           >
-            <Share2 className="w-4 h-4 text-emerald-700 dark:text-[#5FD39A]" />
-            <span>Share on WhatsApp</span>
+            <Share2 className="w-3.5 h-3.5" />
+            <span>Share</span>
           </button>
-
           <button
             type="button"
             onClick={handleSaveRecipe}
-            className={`p-3 rounded-xl border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm transition-colors duration-150 cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs ${
-              isSaved
-                ? 'bg-[#D8EFDF] dark:bg-[#12281F] text-[#193826] dark:text-[#5FD39A] dark:hover:bg-[#193429]'
-                : 'bg-white dark:bg-[#1B2A23] text-[#193826] dark:text-[#FFB34D] hover:bg-[#FFF0C5] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283]'
-            }`}
+            className="px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-white dark:bg-[#1B2A23] text-xs font-bold text-[#193826] dark:text-[#FFB34D] hover:bg-[#FFF0C5] flex items-center gap-1.5 cursor-pointer"
           >
-            <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#193826] dark:text-[#5FD39A]' : 'text-[#FF7B25] dark:text-[#FFB34D]'}`} />
-            <span>{isSaved ? 'Recipe Saved!' : 'Save Recipe'}</span>
+            <Bookmark className="w-3.5 h-3.5" />
+            <span>{isSaved ? 'Saved' : 'Save'}</span>
           </button>
-
-          <button
-            type="button"
-            onClick={handleReadAloudToggle}
-            className="p-3 rounded-xl bg-white dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm text-[#193826] dark:text-[#7CC4F0] hover:bg-[#D6E8F4] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] transition-colors duration-150 cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
-          >
-            <Volume2 className="w-4 h-4 text-sky-800 dark:text-[#7CC4F0]" />
-            <span>{isSpeaking ? (isPaused ? 'Resume' : 'Pause') : 'Read aloud'}</span>
-          </button>
-
           <button
             type="button"
             onClick={handlePrint}
-            className="p-3 rounded-xl bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] border-2 border-[#193826] dark:border-[#3F6B57] hover:bg-[#E86A18] dark:hover:bg-[#FFC266] font-bold text-xs sm:text-sm ink-button cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs transition-all duration-150"
+            className="px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] text-xs font-bold flex items-center gap-1.5 cursor-pointer"
           >
-            <Printer className="w-4 h-4" />
-            <span>Print Recipe Guide</span>
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print</span>
           </button>
         </div>
       </div>
 
-      {/* Mandatory Content & Medical Rules Disclaimer */}
-      <div className="p-4 rounded-xl bg-[#FFFDF9] dark:bg-[#15211B] border border-[#193826]/40 dark:border-[#3F6B57] text-center text-xs text-[#193826]/85 dark:text-[#8FA89A] font-medium leading-relaxed">
-        <p className="font-bold text-[#193826] dark:text-[#BBCDC2] mb-0.5">
-          {PLATFORM_STATS.scienceNotice}
-        </p>
-        <p>
-          {PLATFORM_STATS.medicalDisclaimer} Consult a certified nutritionist or healthcare professional for individualized dietary therapy.
-        </p>
+      {/* Mobile Sticky Bottom Bar (Share, Save, Read aloud) */}
+      <div className="sticky bottom-0 z-20 bg-[#FFFDF9]/95 dark:bg-[#15211B]/95 backdrop-blur-md py-2 px-3 border-t-2 border-[#193826] dark:border-[#3F6B57] flex items-center justify-between gap-2 sm:hidden -mx-4 -mb-24 ink-shadow-sm">
+        <button
+          type="button"
+          onClick={handleShareWhatsApp}
+          className="flex-1 py-2 px-2 rounded-xl bg-white dark:bg-[#1B2A23] border border-[#193826] dark:border-[#3F6B57] text-xs font-bold text-[#193826] dark:text-[#5FD39A] flex items-center justify-center gap-1 cursor-pointer"
+        >
+          <Share2 className="w-3.5 h-3.5" />
+          <span>Share</span>
+        </button>
+        <button
+          type="button"
+          onClick={handleSaveRecipe}
+          className="flex-1 py-2 px-2 rounded-xl bg-white dark:bg-[#1B2A23] border border-[#193826] dark:border-[#3F6B57] text-xs font-bold text-[#193826] dark:text-[#FFB34D] flex items-center justify-center gap-1 cursor-pointer"
+        >
+          <Bookmark className="w-3.5 h-3.5" />
+          <span>{isSaved ? 'Saved' : 'Save'}</span>
+        </button>
+        <button
+          type="button"
+          onClick={handleReadAloudToggle}
+          className="flex-1 py-2 px-2 rounded-xl bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] text-xs font-bold flex items-center justify-center gap-1 cursor-pointer"
+        >
+          <Volume2 className="w-3.5 h-3.5" />
+          <span>{isSpeaking ? (isPaused ? 'Resume' : 'Pause') : 'Read'}</span>
+        </button>
       </div>
 
-      {/* Feature 2: How We Calculated This Modal */}
+      {/* How We Calculated This Modal */}
       <CalculationModal
         isOpen={showCalculationModal}
         onClose={() => setShowCalculationModal(false)}

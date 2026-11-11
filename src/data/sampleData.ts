@@ -19,6 +19,7 @@ export interface DishSummary {
   description: string;
   servings: number;
   available: boolean;
+  estimatedTimeMins?: number;
   tag?: string;
   image?: string;
 }
@@ -207,6 +208,7 @@ export const DISHES_CATALOG: DishSummary[] = [
     description: 'Classic velvety tomato gravy, tender chicken, and fragrant fenugreek leaves.',
     servings: 4,
     available: true,
+    estimatedTimeMins: 30,
   },
   {
     id: 'dal-chawal',
@@ -217,6 +219,7 @@ export const DISHES_CATALOG: DishSummary[] = [
     description: 'Golden yellow lentils topped with garlic-cumin tadka over steamed rice.',
     servings: 3,
     available: true,
+    estimatedTimeMins: 35,
   },
   {
     id: 'rajma',
@@ -227,6 +230,7 @@ export const DISHES_CATALOG: DishSummary[] = [
     description: 'Slow-cooked kidney beans simmered in spiced onion-tomato reduction.',
     servings: 4,
     available: true,
+    estimatedTimeMins: 45,
   },
   {
     id: 'khichdi',
@@ -237,6 +241,7 @@ export const DISHES_CATALOG: DishSummary[] = [
     description: 'Comforting one-pot moong dal and basmati rice with cumin tempering.',
     servings: 2,
     available: true,
+    estimatedTimeMins: 30,
   },
   {
     id: 'aloo-gobi',
@@ -247,6 +252,7 @@ export const DISHES_CATALOG: DishSummary[] = [
     description: 'Crisp florets of cauliflower and potatoes tossed with turmeric and ginger.',
     servings: 4,
     available: true,
+    estimatedTimeMins: 30,
   },
 ];
 

@@ -19,8 +19,8 @@ export const Footer: React.FC<FooterProps> = ({ onStepClick, onResetDemo }) => {
             <span className="font-serif font-bold text-base text-[#193826] dark:text-[#F1F6F2]">
               Flavor Bridge
             </span>
-            <p className="text-xs text-[#193826]/70 dark:text-[#BBCDC2]">
-              Aroma science powered by {PLATFORM_STATS.aromaMoleculesCount} &amp; {PLATFORM_STATS.recipesCount}
+            <p className="text-xs text-[#193826]/75 dark:text-[#BBCDC2]">
+              Powered by aroma science: {PLATFORM_STATS.aromaMoleculesCount} &amp; {PLATFORM_STATS.recipesCount}
             </p>
           </div>
         </div>

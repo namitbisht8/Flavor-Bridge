@@ -54,7 +54,7 @@ export const FlavorBotModal: React.FC<FlavorBotModalProps> = ({
     {
       id: 'msg-init',
       sender: 'bot',
-      text: `Hi! I'm FlavorBot, your culinary aroma companion. Ask me anything about ${currentDishName}, ingredient swaps, or cooking steps!`,
+      text: `Hi! I'm FlavorBot, your cooking helper. Ask me anything about ${currentDishName}, ingredient swaps, or cooking steps!`,
       timestamp: new Date(),
       suggestChips: true,
     },
@@ -68,7 +68,7 @@ export const FlavorBotModal: React.FC<FlavorBotModalProps> = ({
           {
             id: 'msg-init',
             sender: 'bot',
-            text: `Hi! I'm FlavorBot, your culinary aroma companion. Ask me anything about ${currentDishName}, ingredient swaps, or cooking steps!`,
+            text: `Hi! I'm FlavorBot, your cooking helper. Ask me anything about ${currentDishName}, ingredient swaps, or cooking steps!`,
             timestamp: new Date(),
             suggestChips: true,
           },
@@ -182,16 +182,16 @@ export const FlavorBotModal: React.FC<FlavorBotModalProps> = ({
       {/* Floating trigger button */}
       <aside
         aria-label="FlavorBot Assistant Trigger"
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 no-print"
+        className="fixed bottom-24 right-3 sm:bottom-6 sm:right-6 z-40 no-print"
       >
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
           aria-label={isOpen ? 'Close FlavorBot Assistant' : 'Open FlavorBot Assistant'}
-          className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#FFF0C5] dark:bg-[#1B2A23] text-[#193826] dark:text-[#FFB34D] border-2.5 border-[#193826] dark:border-[#3F6B57] ink-shadow flex items-center justify-center hover:scale-105 active:scale-95 dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] transition-all duration-150 cursor-pointer group relative"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FFF0C5] dark:bg-[#1B2A23] text-[#193826] dark:text-[#FFB34D] border-2.5 border-[#193826] dark:border-[#3F6B57] ink-shadow flex items-center justify-center hover:scale-105 active:scale-95 dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] transition-all duration-150 cursor-pointer group relative"
         >
-          <Bot className="w-6 h-6 sm:w-7 sm:h-7 text-[#193826] dark:text-[#FFB34D] group-hover:rotate-6 transition-transform" />
-          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#FF7B25] dark:bg-[#FFB34D] rounded-full border-2 border-white dark:border-[#0C1411] animate-pulse" />
+          <Bot className="w-5 h-5 sm:w-7 sm:h-7 text-[#193826] dark:text-[#FFB34D] group-hover:rotate-6 transition-transform" />
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#FF7B25] dark:bg-[#FFB34D] rounded-full border-2 border-white dark:border-[#0C1411] animate-pulse" />
         </button>
       </aside>
 
@@ -201,7 +201,7 @@ export const FlavorBotModal: React.FC<FlavorBotModalProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label="FlavorBot Assistant"
-          className="fixed bottom-20 right-4 sm:right-6 w-[calc(100vw-32px)] sm:w-96 h-[500px] max-h-[calc(100vh-100px)] flex flex-col rounded-2xl bg-[#FFFDF9] dark:bg-[#15211B] border-2 border-[#193826] dark:border-[#3F6B57] ink-shadow-lg z-50 overflow-hidden no-print animate-in fade-in slide-in-from-bottom-4 duration-200"
+          className="fixed bottom-16 right-3 sm:bottom-20 sm:right-6 w-[calc(100vw-24px)] sm:w-96 h-[480px] max-h-[calc(100vh-80px)] flex flex-col rounded-2xl bg-[#FFFDF9] dark:bg-[#15211B] border-2 border-[#193826] dark:border-[#3F6B57] ink-shadow-lg z-50 overflow-hidden no-print animate-in fade-in slide-in-from-bottom-4 duration-200"
         >
           {/* Header (design preserved: icon, title, Beta tag, subtitle, close) */}
           <div className="p-3.5 bg-[#193826] dark:bg-[#101A15] text-white flex items-center justify-between border-b dark:border-[#3F6B57] shrink-0">
@@ -217,7 +217,7 @@ export const FlavorBotModal: React.FC<FlavorBotModalProps> = ({
                   </span>
                 </h3>
                 <span className="text-[10px] text-white/80 dark:text-[#8FA89A]">
-                  Aroma Matrix Specialist
+                  Cooking helper
                 </span>
               </div>
             </div>
