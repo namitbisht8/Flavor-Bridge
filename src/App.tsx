@@ -46,6 +46,26 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Feature 1: 1-minute demo trigger (Non-veg, None, Butter Chicken, all rebuilt ingredients, open Screen 3)
+  const handleRunDemo = () => {
+    setDiet('Non-veg');
+    setAllergies(['None']);
+    setSelectedDishId('butter-chicken');
+    setRebuiltIngredients(TOGGLEABLE_INGREDIENTS);
+    setCurrentStep(3);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Feature 1: Reset demo (clears all choices and returns to Screen 1)
+  const handleResetDemo = () => {
+    setDiet('Non-veg');
+    setAllergies(['None']);
+    setSelectedDishId('butter-chicken');
+    setRebuiltIngredients(TOGGLEABLE_INGREDIENTS);
+    setCurrentStep(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative text-[#193826] dark:text-[#F1F6F2] selection:bg-[#FFF0C5] selection:text-[#193826] dark:selection:bg-[#FFB34D] dark:selection:text-[#1A1200]">
       {/* Textured Dotted Sketchbook & Soft Watercolor Wash Layer */}
@@ -68,6 +88,7 @@ export default function App() {
             allergies={allergies}
             setAllergies={setAllergies}
             onContinue={() => handleStepNavigation(2)}
+            onRunDemo={handleRunDemo}
           />
         )}
 
@@ -126,7 +147,10 @@ export default function App() {
       />
 
       {/* Clean 3-step footer */}
-      <Footer onStepClick={handleStepNavigation} />
+      <Footer
+        onStepClick={handleStepNavigation}
+        onResetDemo={handleResetDemo}
+      />
     </div>
   );
 }

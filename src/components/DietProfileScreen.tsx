@@ -18,6 +18,7 @@ interface DietProfileScreenProps {
   allergies: string[];
   setAllergies: (allergies: string[]) => void;
   onContinue: () => void;
+  onRunDemo?: () => void;
 }
 
 export const DietProfileScreen: React.FC<DietProfileScreenProps> = ({
@@ -26,6 +27,7 @@ export const DietProfileScreen: React.FC<DietProfileScreenProps> = ({
   allergies,
   setAllergies,
   onContinue,
+  onRunDemo,
 }) => {
   const getDietIcon = (iconName: string) => {
     switch (iconName) {
@@ -123,6 +125,22 @@ export const DietProfileScreen: React.FC<DietProfileScreenProps> = ({
               </button>
             );
           })}
+        </div>
+
+        {/* Feature 1: 1-Minute Demo Trigger */}
+        <div className="mt-3.5 flex items-center justify-between flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onRunDemo}
+            aria-label="Try the 1-minute demo: Rebuild Butter Chicken"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#1B2A23] hover:bg-[#FFE0CE] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] text-xs font-bold text-[#193826] dark:text-[#FFB34D] transition-colors cursor-pointer shadow-xs"
+          >
+            <span className="text-xs">⚡</span>
+            <span>Try the 1-minute demo</span>
+          </button>
+          <span className="text-[11px] text-[#193826]/70 dark:text-[#8FA89A]">
+            Auto-selects Non-veg Butter Chicken rebuild
+          </span>
         </div>
       </div>
 

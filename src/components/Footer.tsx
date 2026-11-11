@@ -4,9 +4,10 @@ import { PLATFORM_STATS } from '../data/sampleData';
 
 interface FooterProps {
   onStepClick: (step: number) => void;
+  onResetDemo?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onStepClick }) => {
+export const Footer: React.FC<FooterProps> = ({ onStepClick, onResetDemo }) => {
   return (
     <footer className="mt-12 border-t-2 border-[#193826] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#15211B] py-8 px-4 no-print transition-colors">
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
@@ -24,8 +25,8 @@ export const Footer: React.FC<FooterProps> = ({ onStepClick }) => {
           </div>
         </div>
 
-        {/* 3 Nav Steps Only (No broken links, no clinical guidelines, no pantry) */}
-        <nav aria-label="Footer Steps" className="flex items-center gap-3 text-xs font-bold text-[#193826] dark:text-[#BBCDC2]">
+        {/* 3 Nav Steps + Reset demo link */}
+        <nav aria-label="Footer Steps" className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 text-xs font-bold text-[#193826] dark:text-[#BBCDC2]">
           <button
             onClick={() => onStepClick(1)}
             className="hover:underline hover:text-[#FF7B25] dark:hover:text-[#FFB34D] cursor-pointer"
@@ -46,6 +47,18 @@ export const Footer: React.FC<FooterProps> = ({ onStepClick }) => {
           >
             3. Rebuilt Recipe
           </button>
+          {onResetDemo && (
+            <>
+              <span className="dark:text-[#8FA89A]">•</span>
+              <button
+                onClick={onResetDemo}
+                className="hover:underline text-[#FF7B25] dark:text-[#FFB34D] cursor-pointer font-bold"
+                title="Clear all choices and return to step 1"
+              >
+                Reset demo
+              </button>
+            </>
+          )}
         </nav>
 
         {/* Disclaimer */}

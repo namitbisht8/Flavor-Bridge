@@ -1,6 +1,6 @@
 {
   "name": "Flavor Bridge",
-  "description": "Smart culinary rebuilding web app that matches aroma molecules to recreate classic dishes with reduced sodium and saturated fat.",
+  "description": "Healthy food that still tastes like home. Rebuild restricted-diet dishes with smell twins.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

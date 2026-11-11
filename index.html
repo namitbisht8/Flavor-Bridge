@@ -4,13 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flavor Bridge</title>
-    <link rel="icon" href="/logo.png" />
-    <link rel="apple-touch-icon" href="/logo.png" />
-    <meta name="description" content="Smart culinary rebuilding web app that matches aroma molecules to recreate classic dishes with reduced sodium and saturated fat." />
+    <link rel="icon" href="/logo-icon.png" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo-icon.png" />
+    <meta name="description" content="Healthy food that still tastes like home. Rebuild restricted-diet dishes with smell twins." />
     <meta property="og:title" content="Flavor Bridge" />
-    <meta property="og:description" content="Smart culinary rebuilding web app that matches aroma molecules to recreate classic dishes with reduced sodium and saturated fat." />
+    <meta property="og:description" content="Healthy food that still tastes like home. Rebuild restricted-diet dishes with smell twins." />
     <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:image" content="/logo-icon.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Flavor Bridge" />
+    <meta name="twitter:description" content="Healthy food that still tastes like home. Rebuild restricted-diet dishes with smell twins." />
+    <meta name="twitter:image" content="/logo-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Domine:wght@500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400;1,6..12,600&display=swap" rel="stylesheet">
@@ -22,6 +27,10 @@
             document.documentElement.classList.add('dark');
           } else {
             document.documentElement.classList.remove('dark');
+          }
+          var savedFontSize = localStorage.getItem('flavor_bridge_font_size');
+          if (savedFontSize) {
+            document.documentElement.style.fontSize = savedFontSize;
           }
         } catch (e) {}
       })();

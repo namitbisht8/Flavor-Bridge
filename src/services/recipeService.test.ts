@@ -185,3 +185,20 @@ test('toggleAllergySelection enforces exclusivity of None', () => {
   const res2 = toggleAllergySelection(['None'], 'Soy');
   assert.deepEqual(res2, ['Soy']);
 });
+
+test('API_MODE is defined and defaults to sample', async () => {
+  const { API_MODE } = await import('../config');
+  assert.ok(API_MODE === 'sample' || API_MODE === 'live');
+  assert.equal(API_MODE, 'sample');
+});
+
+test('Demo configuration sets Non-veg, None, Butter Chicken, and all 4 rebuilt ingredients', () => {
+  // Demo sets up: Non-veg, None, Butter Chicken
+  const demoResult = getRebuiltRecipe('butter-chicken', 'Non-veg', ['None'], TOGGLEABLE_INGREDIENTS);
+  assert.equal(demoResult.isCompatible, true);
+  assert.ok(demoResult.recipe);
+  assert.equal(demoResult.recipe.dishId, 'butter-chicken');
+  assert.equal(demoResult.recipe.rebuiltSodiumMg, 310);
+  assert.equal(demoResult.recipe.isSodiumOverLimit, false);
+});
+

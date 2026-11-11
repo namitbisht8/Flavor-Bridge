@@ -17,8 +17,10 @@ import {
   Info,
   Check,
   AlertTriangle,
+  HelpCircle,
 } from 'lucide-react';
 import { SampleBadge } from './SampleBadge';
+import { CalculationModal } from './CalculationModal';
 import { RebuiltRecipeData, PLATFORM_STATS } from '../data/sampleData';
 
 interface RebuiltRecipeScreenProps {
@@ -48,6 +50,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
   const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>({});
   const [isSaved, setIsSaved] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showCalculationModal, setShowCalculationModal] = useState(false);
 
   // Speech synthesis state
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -202,7 +205,16 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-center">
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
+          <button
+            type="button"
+            onClick={() => setShowCalculationModal(true)}
+            aria-label="How we calculated this"
+            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#1B2A23] hover:bg-[#FFE0CE] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] text-[#193826] dark:text-[#FFB34D] transition-colors duration-150 cursor-pointer flex items-center gap-1.5 shadow-xs"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-[#FF7B25] dark:text-[#FFB34D]" />
+            <span>How we calculated this</span>
+          </button>
           <button
             onClick={onBackToBuild}
             className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#FFE0CE] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] dark:hover:text-[#F1F6F2] text-[#193826] dark:text-[#BBCDC2] transition-colors duration-150 cursor-pointer flex items-center gap-1.5"
@@ -720,6 +732,12 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
           {PLATFORM_STATS.medicalDisclaimer} Consult a certified nutritionist or healthcare professional for individualized dietary therapy.
         </p>
       </div>
+
+      {/* Feature 2: How We Calculated This Modal */}
+      <CalculationModal
+        isOpen={showCalculationModal}
+        onClose={() => setShowCalculationModal(false)}
+      />
     </div>
   );
 };
