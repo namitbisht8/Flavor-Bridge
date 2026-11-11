@@ -4,6 +4,8 @@ import {
   getRebuiltRecipe,
   getAvailableDishesForDiet,
   toggleAllergySelection,
+  matchDishesFromIngredients,
+  matchDishFromSpeech,
 } from './recipeService';
 import { TOGGLEABLE_INGREDIENTS } from '../data/sampleData';
 
@@ -201,4 +203,72 @@ test('Demo configuration sets Non-veg, None, Butter Chicken, and all 4 rebuilt i
   assert.equal(demoResult.recipe.rebuiltSodiumMg, 310);
   assert.equal(demoResult.recipe.isSodiumOverLimit, false);
 });
+
+test('matchDishesFromIngredients matches chicken + tomato/butter to Butter Chicken for Non-veg', () => {
+  const result = matchDishesFromIngredients(['chicken', 'tomato', 'onion'], 'Chicken Curry', 'Non-veg');
+  assert.equal(result.matchedDishes.length, 1);
+  assert.equal(result.matchedDishes[0].id, 'butter-chicken');
+});
+
+test('matchDishesFromIngredients hides non-veg matches for vegetarian and vegan diets', () => {
+  const vegResult = matchDishesFromIngredients(['chicken', 'tomato'], '', 'Vegetarian');
+  assert.equal(vegResult.matchedDishes.length, 0);
+  assert.equal(vegResult.availableDishesForDiet.length, 4);
+
+  const veganResult = matchDishesFromIngredients(['chicken', 'butter'], '', 'Vegan');
+  assert.equal(veganResult.matchedDishes.length, 0);
+});
+
+test('matchDishesFromIngredients matches dal/lentil + rice to Dal Tadka & Chawal', () => {
+  const result = matchDishesFromIngredients(['lentils', 'rice', 'garlic'], '', 'Vegetarian');
+  assert.equal(result.matchedDishes.length, 1);
+  assert.equal(result.matchedDishes[0].id, 'dal-chawal');
+});
+
+test('matchDishesFromIngredients matches kidney beans/rajma to Rajma Masala', () => {
+  const result = matchDishesFromIngredients(['kidney beans', 'onion', 'ginger'], '', 'Vegetarian');
+  assert.equal(result.matchedDishes.length, 1);
+  assert.equal(result.matchedDishes[0].id, 'rajma');
+});
+
+test('matchDishesFromIngredients matches moong + rice to Moong Dal Khichdi', () => {
+  const result = matchDishesFromIngredients(['moong dal', 'rice', 'cumin'], '', 'Vegan');
+  assert.equal(result.matchedDishes.length, 1);
+  assert.equal(result.matchedDishes[0].id, 'khichdi');
+});
+
+test('matchDishesFromIngredients matches potato + cauliflower to Aloo Gobi', () => {
+  const result = matchDishesFromIngredients(['potato', 'cauliflower', 'turmeric'], '', 'Vegetarian');
+  assert.equal(result.matchedDishes.length, 1);
+  assert.equal(result.matchedDishes[0].id, 'aloo-gobi');
+});
+
+test('matchDishesFromIngredients with unrecognized ingredients returns empty matches and lists supported dishes', () => {
+  const result = matchDishesFromIngredients(['chocolate', 'strawberry'], 'dessert', 'Vegetarian');
+  assert.equal(result.matchedDishes.length, 0);
+  assert.equal(result.availableDishesForDiet.length, 4);
+});
+
+test('matchDishFromSpeech recognizes English, Hindi, and Hinglish queries', () => {
+  const available = getAvailableDishesForDiet('Non-veg');
+
+  const bc = matchDishFromSpeech('I want butter chicken please', available);
+  assert.equal(bc?.id, 'butter-chicken');
+
+  const dt = matchDishFromSpeech('dal tadka chawal', available);
+  assert.equal(dt?.id, 'dal-chawal');
+
+  const rajma = matchDishFromSpeech('aaj rajma banate hain', available);
+  assert.equal(rajma?.id, 'rajma');
+
+  const khichdi = matchDishFromSpeech('light moong khichdi', available);
+  assert.equal(khichdi?.id, 'khichdi');
+
+  const alooGobi = matchDishFromSpeech('alu gobi', available);
+  assert.equal(alooGobi?.id, 'aloo-gobi');
+
+  const none = matchDishFromSpeech('pizza and pasta', available);
+  assert.equal(none, undefined);
+});
+
 

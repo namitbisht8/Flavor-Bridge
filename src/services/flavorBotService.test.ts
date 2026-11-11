@@ -151,3 +151,77 @@ test('Fallback triggers gracefully when query does not match any rule and API is
     assert.ok(typeof r.debugError === 'string');
   }
 });
+
+test('Rule layer answers greetings and thanks without Gemini', () => {
+  const g1 = matchRuleBasedFlavorBot('Hello!', mockContext);
+  assert.ok(g1);
+  assert.equal(g1.source, 'rule');
+  assert.ok(g1.text.includes('FlavorBot'));
+
+  const g2 = matchRuleBasedFlavorBot('Namaste bhai', mockContext);
+  assert.ok(g2);
+  assert.equal(g2.source, 'rule');
+  assert.ok(g2.text.includes('Namaste'));
+
+  const t1 = matchRuleBasedFlavorBot('Thank you so much', mockContext);
+  assert.ok(t1);
+  assert.equal(t1.source, 'rule');
+  assert.ok(t1.text.includes('welcome'));
+
+  const t2 = matchRuleBasedFlavorBot('Bahut shukriya', mockContext);
+  assert.ok(t2);
+  assert.equal(t2.source, 'rule');
+  assert.ok(t2.text.includes('swagat') || t2.text.includes('welcome'));
+});
+
+test('Rule layer answers recipe requests by diet and specific dishes', () => {
+  // "give me a non veg recipe"
+  const nv = matchRuleBasedFlavorBot('Give me a non veg recipe', mockContext);
+  assert.ok(nv);
+  assert.equal(nv.source, 'rule');
+  assert.ok(nv.text.includes('Butter Chicken'));
+  assert.ok(nv.text.includes('Step 1') || nv.text.includes('Marinate'));
+
+  // "recipe for rajma"
+  const rRajma = matchRuleBasedFlavorBot('recipe for rajma', mockContext);
+  assert.ok(rRajma);
+  assert.equal(rRajma.source, 'rule');
+  assert.ok(rRajma.text.includes('Rajma Masala'));
+  assert.ok(rRajma.text.includes('Step 1') || rRajma.text.includes('Soak rajma'));
+
+  // "how do I make aloo gobi"
+  const rAloo = matchRuleBasedFlavorBot('how do I make aloo gobi', mockContext);
+  assert.ok(rAloo);
+  assert.equal(rAloo.source, 'rule');
+  assert.ok(rAloo.text.includes('Aloo Gobi'));
+
+  // "how to cook khichdi"
+  const rKhichdi = matchRuleBasedFlavorBot('how to cook khichdi', mockContext);
+  assert.ok(rKhichdi);
+  assert.equal(rKhichdi.source, 'rule');
+  assert.ok(rKhichdi.text.includes('Moong Dal Khichdi'));
+});
+
+test('Rule layer answers cost, time, and difficulty for specific dishes', () => {
+  // "what is the cost of rajma"
+  const c1 = matchRuleBasedFlavorBot("what's the cost of rajma", mockContext);
+  assert.ok(c1);
+  assert.equal(c1.source, 'rule');
+  assert.ok(c1.text.includes('Rajma Masala'));
+  assert.ok(c1.text.includes('₹'));
+
+  // "time for butter chicken"
+  const t1 = matchRuleBasedFlavorBot('how much time for butter chicken', mockContext);
+  assert.ok(t1);
+  assert.equal(t1.source, 'rule');
+  assert.ok(t1.text.includes('Butter Chicken'));
+  assert.ok(t1.text.includes('minutes'));
+
+  // "difficulty of khichdi"
+  const d1 = matchRuleBasedFlavorBot('difficulty of khichdi', mockContext);
+  assert.ok(d1);
+  assert.equal(d1.source, 'rule');
+  assert.ok(d1.text.includes('Moong Dal Khichdi'));
+  assert.ok(d1.text.includes('Easy'));
+});
+

@@ -266,6 +266,13 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
             <strong className="text-[#193826] dark:text-[#F1F6F2]">{recipe.originalAddedSugarG.toFixed(1)}g → {recipe.rebuiltAddedSugarG.toFixed(1)}g</strong>
           </div>
         </div>
+
+        {/* Friendly summary sentence */}
+        <p className="mt-2.5 pt-2 border-t border-[#193826]/10 dark:border-[#3F6B57]/30 text-xs text-[#193826]/85 dark:text-[#BBCDC2] font-medium leading-relaxed">
+          {recipe.isSodiumOverLimit
+            ? `Your rebuilt dish exceeds your ${recipe.limitSodiumMg} mg sodium limit because table salt was retained. Turn salt rebuilding back on to stay within your target.`
+            : `Your rebuilt dish stays under your ${recipe.limitSodiumMg} mg sodium limit and keeps most of the original aroma (sample estimate).`}
+        </p>
       </div>
 
       {/* 2. ONE ROW BELOW: Cost, Difficulty, Time as small inline items (not big cards) */}
@@ -365,6 +372,9 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
         {/* Tab 2: Cooking Steps */}
         {activeTab === 'steps' && (
           <div className="p-4 sm:p-5 space-y-3">
+            <p className="text-xs text-[#193826]/80 dark:text-[#BBCDC2] mb-2 font-medium">
+              Simple 3-step preparation to keep restaurant flavor with healthy swaps.
+            </p>
             <div className="flex items-center justify-between gap-2 mb-2">
               <span className="text-xs font-bold text-[#193826]/80 dark:text-[#BBCDC2]">
                 Check items as you cook
@@ -422,6 +432,9 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
         {/* Tab 3: Shopping List */}
         {activeTab === 'shopping' && (
           <div className="p-4 sm:p-5">
+            <p className="text-xs text-[#193826]/80 dark:text-[#BBCDC2] mb-3 font-medium">
+              Estimated prices for the ingredients you need to make this rebuilt dish.
+            </p>
             <div className="flex items-center justify-between gap-2 mb-3">
               <span className="text-xs text-[#193826]/75 dark:text-[#BBCDC2]">
                 Total basket estimate:
@@ -471,6 +484,9 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
         {/* Tab 4: Details */}
         {activeTab === 'details' && (
           <div className="p-4 sm:p-5 space-y-3.5 text-xs text-[#193826]/85 dark:text-[#BBCDC2]">
+            <p className="text-xs text-[#193826]/80 dark:text-[#BBCDC2] mb-1 font-medium">
+              Full nutritional comparison between the traditional recipe and your rebuilt version.
+            </p>
             <div className="p-3 rounded-xl bg-[#FAF7F2] dark:bg-[#1B2A23] border border-[#193826]/20 dark:border-[#3F6B57]">
               <strong className="block text-sm font-serif text-[#193826] dark:text-[#F1F6F2] mb-1">
                 Before vs. After Full Comparison

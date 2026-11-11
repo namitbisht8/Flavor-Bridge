@@ -242,3 +242,131 @@ export function toggleAllergySelection(
   }
 }
 
+export interface DishMatchResult {
+  matchedDishes: DishSummary[];
+  unmatchedIngredientsText: string;
+  availableDishesForDiet: DishSummary[];
+  dishGuess: string;
+}
+
+/**
+ * Rule-based hybrid matcher mapping detected photo ingredients to supported dishes.
+ * Rules:
+ * - chicken + tomato or butter = Butter Chicken
+ * - dal/lentil + rice = Dal Tadka & Chawal
+ * - kidney beans/rajma = Rajma Masala
+ * - moong + rice = Moong Dal Khichdi
+ * - potato + cauliflower = Aloo Gobi
+ *
+ * Respects user's diet (hides non-veg matches for vegetarian/vegan users).
+ */
+export function matchDishesFromIngredients(
+  ingredients: string[],
+  dishGuess = '',
+  diet = 'Non-veg'
+): DishMatchResult {
+  const available = getAvailableDishesForDiet(diet);
+  const lowerIngredients = ingredients.map((i) => i.toLowerCase().trim());
+  const lowerGuess = (dishGuess || '').toLowerCase().trim();
+
+  const hasAny = (keywords: string[]) =>
+    keywords.some(
+      (kw) =>
+        lowerIngredients.some((ing) => ing.includes(kw)) ||
+        lowerGuess.includes(kw)
+    );
+
+  const matchedDishIds = new Set<string>();
+
+  // Common base ingredients
+  const hasRice = hasAny(['rice', 'chawal', 'cumin rice', 'jeera rice', 'steamed rice']);
+
+  // 1. Butter Chicken: chicken + (tomato or butter)
+  const hasChicken = hasAny(['chicken', 'murgh', 'poultry', 'meat']);
+  const hasTomatoOrButter = hasAny(['tomato', 'butter', 'makhani', 'cream', 'gravy']);
+  if ((hasChicken && hasTomatoOrButter) || lowerGuess.includes('butter chicken') || lowerGuess.includes('makhani')) {
+    matchedDishIds.add('butter-chicken');
+  }
+
+  // 3. Rajma Masala: kidney beans/rajma
+  const hasRajma = hasAny(['kidney bean', 'kidney beans', 'rajma', 'red beans']);
+  if (hasRajma || lowerGuess.includes('rajma')) {
+    matchedDishIds.add('rajma');
+  }
+
+  // 4. Moong Dal Khichdi: moong + rice
+  const hasMoong = hasAny(['moong', 'mung', 'green gram', 'yellow moong']);
+  if ((hasMoong && (hasRice || hasAny(['khichdi', 'kitchari']))) || lowerGuess.includes('khichdi') || lowerGuess.includes('kitchari')) {
+    matchedDishIds.add('khichdi');
+  }
+
+  // 2. Dal Tadka & Chawal: dal/lentil + rice (when not specifically moong khichdi)
+  const hasToorOrTadka = hasAny(['toor', 'tadka', 'yellow dal', 'arhar', 'chana dal']);
+  const hasGeneralDal = hasAny(['dal', 'lentil', 'daal']);
+  if ((!hasMoong && (hasToorOrTadka || (hasGeneralDal && hasRice))) || lowerGuess.includes('dal tadka') || lowerGuess.includes('dal chawal')) {
+    matchedDishIds.add('dal-chawal');
+  }
+
+  // 5. Aloo Gobi: potato + cauliflower
+  const hasPotato = hasAny(['potato', 'potatoes', 'aloo', 'alu']);
+  const hasCauliflower = hasAny(['cauliflower', 'gobi', 'gobhi']);
+  if ((hasPotato && hasCauliflower) || lowerGuess.includes('aloo gobi') || lowerGuess.includes('alu gobi')) {
+    matchedDishIds.add('aloo-gobi');
+  }
+
+  // Fallback single strong keywords if no combo matched yet
+  if (matchedDishIds.size === 0) {
+    if (hasAny(['chicken', 'murgh'])) matchedDishIds.add('butter-chicken');
+    else if (hasAny(['rajma'])) matchedDishIds.add('rajma');
+    else if (hasAny(['khichdi', 'moong'])) matchedDishIds.add('khichdi');
+    else if (hasAny(['cauliflower', 'gobi', 'gobhi'])) matchedDishIds.add('aloo-gobi');
+    else if (hasAny(['dal', 'toor', 'tadka'])) matchedDishIds.add('dal-chawal');
+  }
+
+  // Filter matched dishes by diet (e.g. Vegetarian/Vegan users never get non-veg)
+  const matchedDishes = available.filter((d) => matchedDishIds.has(d.id));
+
+  return {
+    matchedDishes,
+    unmatchedIngredientsText: ingredients.join(', '),
+    availableDishesForDiet: available,
+    dishGuess,
+  };
+}
+
+/**
+ * Matches user voice transcript (English, Hindi, or Hinglish) to a catalog dish.
+ */
+export function matchDishFromSpeech(
+  transcript: string,
+  availableDishes: DishSummary[]
+): DishSummary | undefined {
+  if (!transcript) return undefined;
+  const lower = transcript.toLowerCase().trim();
+
+  // 1. Direct name or Hindi name inclusion
+  for (const dish of availableDishes) {
+    if (lower.includes(dish.name.toLowerCase())) return dish;
+    if (dish.hindiName && lower.includes(dish.hindiName.toLowerCase())) return dish;
+  }
+
+  // 2. Hinglish and common colloquial alias mapping
+  const aliasMap: Record<string, string[]> = {
+    'butter-chicken': ['butter chicken', 'chicken', 'murg makhani', 'murgh makhani', 'makhan chicken'],
+    'dal-chawal': ['dal tadka', 'dal chawal', 'daal chawal', 'daal', 'dal', 'tadka', 'peeli dal'],
+    'rajma': ['rajma', 'rajma masala', 'rajma chawal', 'laal rajma'],
+    'khichdi': ['khichdi', 'moong dal khichdi', 'moong khichdi', 'kitchari'],
+    'aloo-gobi': ['aloo gobi', 'alu gobi', 'aloo gobhi', 'gobhi', 'gobi', 'gobi aloo'],
+  };
+
+  for (const [dishId, aliases] of Object.entries(aliasMap)) {
+    if (aliases.some((alias) => lower.includes(alias))) {
+      const found = availableDishes.find((d) => d.id === dishId);
+      if (found) return found;
+    }
+  }
+
+  return undefined;
+}
+
+

@@ -1,4 +1,9 @@
-import { RebuiltRecipeData } from '../data/sampleData';
+import {
+  RebuiltRecipeData,
+  REBUILT_RECIPES_DATABASE,
+  BUTTER_CHICKEN_BASE_DATA,
+  DISHES_CATALOG,
+} from '../data/sampleData';
 
 export interface FlavorBotContext {
   dishId: string;
@@ -47,10 +52,44 @@ export const SUGGESTED_QUESTION_CHIPS = [
 ];
 
 /**
+ * Loosely matches dish names from user text in English or Hinglish
+ */
+function findDishByLooseName(q: string): { id: string; name: string } | null {
+  const lower = q.toLowerCase();
+  if (
+    lower.includes('butter chicken') ||
+    (lower.includes('chicken') && !lower.includes('veg')) ||
+    lower.includes('murgh') ||
+    lower.includes('makhani')
+  ) {
+    return { id: 'butter-chicken', name: 'Butter Chicken' };
+  }
+  if (
+    lower.includes('dal tadka') ||
+    lower.includes('dal chawal') ||
+    lower.includes('daal') ||
+    (lower.includes('dal') && !lower.includes('khichdi')) ||
+    lower.includes('tadka')
+  ) {
+    return { id: 'dal-chawal', name: 'Dal Tadka & Chawal' };
+  }
+  if (lower.includes('rajma')) {
+    return { id: 'rajma', name: 'Rajma Masala' };
+  }
+  if (lower.includes('khichdi') || lower.includes('kitchari') || lower.includes('moong')) {
+    return { id: 'khichdi', name: 'Moong Dal Khichdi' };
+  }
+  if (lower.includes('aloo gobi') || lower.includes('alu gobi') || lower.includes('gobi') || lower.includes('gobhi')) {
+    return { id: 'aloo-gobi', name: 'Aloo Gobi' };
+  }
+  return null;
+}
+
+/**
  * Checks if input contains common Hinglish markers
  */
 function isHinglishQuery(text: string): boolean {
-  return /\b(kya|kaise|kitna|kitni|hai|hain|bhi|nahi|nahin|karna|kar|batao|hoga|hogi|chahiye|namak|cheeni|tel|kaju|swaad|mushkil|aasan)\b/i.test(
+  return /\b(kya|kaise|kitna|kitni|hai|hain|bhi|nahi|nahin|karna|kar|batao|hoga|hogi|chahiye|namak|cheeni|tel|kaju|swaad|mushkil|aasan|namaste|namaskar|shukriya|dhanyawad|dhanyavad|bhai|bataiye|dijiye)\b/i.test(
     text
   );
 }
@@ -66,7 +105,34 @@ export function matchRuleBasedFlavorBot(
   const q = query.trim().toLowerCase();
   const isHinglish = isHinglishQuery(query);
 
-  // Medical / health questions check
+  // 1. Greetings
+  if (
+    /^(hi|hello|hey|namaste|namaskar|kem cho|kaise ho|kaisa hai|good morning|good evening|good afternoon|ola|salaam|sasriyakaal)\b/i.test(q) &&
+    q.length < 35
+  ) {
+    return {
+      text: isHinglish
+        ? "Namaste! Main FlavorBot hoon, aapka cooking helper. Mujhse recipe, sodium limit, swaps ya cooking steps ke baare mein kuch bhi poochein!"
+        : "Hi! I'm FlavorBot, your cooking helper. Ask me about recipes, ingredient swaps, sodium limits, or cooking steps!",
+      source: 'rule',
+      suggestChips: true,
+    };
+  }
+
+  // 2. Thanks
+  if (
+    /^(thanks|thank you|thx|thank u|shukriya|dhanyawad|dhanyavad|bohot shukriya|great thanks|many thanks)[\s!.,?]*$/i.test(q) ||
+    (/\b(thanks|thank you|shukriya|dhanyawad)\b/i.test(q) && q.length < 30)
+  ) {
+    return {
+      text: isHinglish
+        ? "Aapka swagat hai! Healthy aur tasty khana enjoy karein. Kuch aur poochna ho toh batayein!"
+        : "You're very welcome! Enjoy your healthy, delicious food. Let me know if you need anything else!",
+      source: 'rule',
+    };
+  }
+
+  // 3. Medical / health questions check
   if (/\b(bp|blood pressure|hypertension|heart|heart attack|kidney|cholesterol|diabetes|sugar patient|cure|doctor|dietitian|treatment|stroke)\b/i.test(q)) {
     return {
       text: isHinglish
@@ -74,6 +140,91 @@ export function matchRuleBasedFlavorBot(
         : 'Flavor Bridge provides culinary suggestions, not medical advice. For personal health conditions or clinical diet plans, please consult your doctor or registered dietitian.',
       source: 'rule',
     };
+  }
+
+  // 4. "give me a non veg / vegetarian / vegan recipe"
+  const isGiveRecipeQuery =
+    (q.includes('give me') ||
+      q.includes('suggest') ||
+      q.includes('batao') ||
+      q.includes('dikhao') ||
+      q.includes('recommend') ||
+      q.includes('want') ||
+      q.includes('chahiye') ||
+      q.includes('need') ||
+      q.startsWith('non veg recipe') ||
+      q.startsWith('non-veg recipe') ||
+      q.startsWith('vegetarian recipe') ||
+      q.startsWith('veg recipe') ||
+      q.startsWith('vegan recipe')) &&
+    (q.includes('recipe') || q.includes('dish') || q.includes('khana')) &&
+    (q.includes('non-veg') ||
+      q.includes('non veg') ||
+      q.includes('vegetarian') ||
+      q.includes('veg') ||
+      q.includes('vegan'));
+
+  if (isGiveRecipeQuery) {
+    if (q.includes('non-veg') || q.includes('non veg') || q.includes('chicken') || q.includes('meat')) {
+      const dish = REBUILT_RECIPES_DATABASE['butter-chicken'] || BUTTER_CHICKEN_BASE_DATA;
+      const steps = dish.cookingSteps.map((s) => `Step ${s.stepNumber} (${s.timeMinutes}m): ${s.instruction}`).join(' ');
+      return {
+        text: isHinglish
+          ? `Yeh lijiye Non-veg recipe: Butter Chicken (Murgh Makhani)! Steps: ${steps}. Is dish ko select karne ke liye Screen 2 par "Butter Chicken" card par tap karein.`
+          : `Here is our signature Non-veg recipe: Butter Chicken (Murgh Makhani)! Steps: ${steps}. Tap "Butter Chicken" on Screen 2 to rebuild and cook this dish.`,
+        source: 'rule',
+      };
+    }
+
+    if (q.includes('vegan')) {
+      const dish = REBUILT_RECIPES_DATABASE['khichdi'];
+      const steps = dish ? dish.cookingSteps.map((s) => `Step ${s.stepNumber} (${s.timeMinutes}m): ${s.instruction}`).join(' ') : '';
+      return {
+        text: isHinglish
+          ? `Yeh lijiye 100% Vegan recipe: Moong Dal Khichdi! Steps: ${steps}. Yeh cold-pressed tadka ke saath banti hai (zero ghee). Is dish ko Screen 2 par select karein.`
+          : `Here is our 100% Vegan recipe: Moong Dal Khichdi! Steps: ${steps}. Crafted with cold-pressed oil and zero ghee or dairy. Tap it on Screen 2 to rebuild and cook.`,
+        source: 'rule',
+      };
+    }
+
+    if (q.includes('vegetarian') || q.includes('veg')) {
+      const dish = REBUILT_RECIPES_DATABASE['dal-chawal'];
+      const steps = dish ? dish.cookingSteps.map((s) => `Step ${s.stepNumber} (${s.timeMinutes}m): ${s.instruction}`).join(' ') : '';
+      return {
+        text: isHinglish
+          ? `Yeh lijiye Vegetarian recipe: Dal Tadka & Chawal! Steps: ${steps}. Yeh sirf 290 mg sodium mein restaurant aroma deti hai. Is dish ko Screen 2 par select karein.`
+          : `Here is our classic Vegetarian recipe: Dal Tadka & Chawal! Steps: ${steps}. Just 290 mg sodium with rich garlic-cumin tadka. Tap it on Screen 2 to rebuild and cook.`,
+        source: 'rule',
+      };
+    }
+  }
+
+  // 5. "recipe for [dish name]" or "how do I make [dish]"
+  const isSpecificRecipeQuery =
+    (q.includes('recipe for') ||
+      q.includes('recipe of') ||
+      q.includes('how to make') ||
+      q.includes('how do i make') ||
+      q.includes('how to cook') ||
+      q.includes('kaise banaye') ||
+      q.includes('kaise banti') ||
+      q.includes('banane ka tarika') ||
+      q.includes('ki recipe')) &&
+    !isGiveRecipeQuery;
+
+  if (isSpecificRecipeQuery) {
+    const matched = findDishByLooseName(q) || (ctx.dishName ? { id: ctx.dishId, name: ctx.dishName } : null);
+    if (matched) {
+      const targetRecipe = REBUILT_RECIPES_DATABASE[matched.id] || BUTTER_CHICKEN_BASE_DATA;
+      const steps = targetRecipe.cookingSteps.map((s) => `Step ${s.stepNumber} (${s.timeMinutes}m): ${s.instruction}`).join(' ');
+      const swaps = targetRecipe.swaps.map((s) => `${s.originalIngredient} -> ${s.rebuiltIngredient}`).join('; ');
+      return {
+        text: isHinglish
+          ? `${matched.name} ki healthy recipe: Swaps: ${swaps}. Cooking steps: ${steps}. Isme sirf ${targetRecipe.rebuiltSodiumMg} mg sodium hai!`
+          : `Rebuilt ${matched.name} recipe: Key swaps: ${swaps}. Steps: ${steps}. It stays at just ${targetRecipe.rebuiltSodiumMg} mg sodium per serving!`,
+        source: 'rule',
+      };
+    }
   }
 
   // Available Dishes Inquiry: "which non-veg / vegetarian / vegan / dairy-free dishes do you have"
@@ -285,7 +436,7 @@ export function matchRuleBasedFlavorBot(
     };
   }
 
-  // Chip 5: "How hard is this dish?" / difficulty inquiry
+  // Chip 5 & Cost / Difficulty / Time of [dish] inquiry
   if (
     q.includes('how hard') ||
     q.includes('difficulty') ||
@@ -293,10 +444,34 @@ export function matchRuleBasedFlavorBot(
     q.includes('aasan') ||
     q.includes('how difficult') ||
     q.includes('how easy') ||
-    q.includes('time') ||
-    q.includes('kitna time') ||
+    q.includes('cost') ||
+    q.includes('price') ||
+    q.includes('kharcha') ||
+    q.includes('shopping') ||
+    q.includes('how long') ||
+    (q.includes('time') && (q.includes('kitna') || q.includes('how') || q.includes('what') || q.includes('lagta') || q.includes('lagti'))) ||
     q === 'how hard is this dish?'
   ) {
+    const matched = findDishByLooseName(q);
+    if (matched) {
+      const target = REBUILT_RECIPES_DATABASE[matched.id] || BUTTER_CHICKEN_BASE_DATA;
+      return {
+        text: isHinglish
+          ? `${matched.name}: Cost lagbhag ₹${target.costPerServing} per serving hai, difficulty level ${target.difficulty.toLowerCase()} hai, aur lagbhag ${target.estimatedTimeMins} minutes lagte hain.`
+          : `${matched.name}: Estimated cost is ₹${target.costPerServing} per serving, difficulty is rated ${target.difficulty}, and total cooking time is approximately ${target.estimatedTimeMins} minutes across ${target.cookingSteps.length} simple steps.`,
+        source: 'rule',
+      };
+    }
+
+    if (q.includes('cost') || q.includes('price') || q.includes('kharcha') || q.includes('shopping')) {
+      return {
+        text: isHinglish
+          ? `${ctx.dishName} ka estimated cost Rs ${ctx.costPerServing} per serving hai. Pura grocery basket lagbhag ₹${ctx.shoppingListTotal || 410} ka aata hai.`
+          : `Estimated cost for ${ctx.dishName} is Rs ${ctx.costPerServing} per serving. The full grocery basket is estimated around ₹${ctx.shoppingListTotal || 410}.`,
+        source: 'rule',
+      };
+    }
+
     return {
       text: isHinglish
         ? `${ctx.dishName} banana ${ctx.difficulty.toLowerCase()} hai! Yeh sirf ${ctx.estimatedTimeMins} minutes leti hai aur 3 simple steps mein ban jaati hai. Estimated cost lagbhag Rs ${ctx.costPerServing} per serving hai.`
@@ -320,16 +495,6 @@ export function matchRuleBasedFlavorBot(
       text: isHinglish
         ? `${ctx.dishName} 3 steps mein banti hai: ${stepsSummary}`
         : `${ctx.dishName} has 3 easy steps: ${stepsSummary}`,
-      source: 'rule',
-    };
-  }
-
-  // Cost / Shopping inquiry
-  if (q.includes('cost') || q.includes('price') || q.includes('kharcha') || q.includes('shopping')) {
-    return {
-      text: isHinglish
-        ? `${ctx.dishName} ka estimated cost Rs ${ctx.costPerServing} per serving hai. Pura grocery basket lagbhag ₹${ctx.shoppingListTotal || 410} ka aata hai.`
-        : `Estimated cost for ${ctx.dishName} is Rs ${ctx.costPerServing} per serving. The full grocery basket is estimated around ₹${ctx.shoppingListTotal || 410}.`,
       source: 'rule',
     };
   }
@@ -398,7 +563,7 @@ export async function callGeminiFlavorBot(
         query: userQuery,
         context: contextData,
       }),
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(25000),
     });
 
     if (!response.ok) {

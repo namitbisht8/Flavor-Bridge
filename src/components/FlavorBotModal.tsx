@@ -44,6 +44,7 @@ export const FlavorBotModal: React.FC<FlavorBotModalProps> = ({
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isDebugMode = typeof window !== 'undefined' && window.location.search.includes('debug=1');
 
   // Compute active recipe data if not passed directly
   const activeRecipe = recipe || getRebuiltRecipe(dishId, diet, allergies, rebuiltIngredients).recipe;
@@ -255,7 +256,7 @@ export const FlavorBotModal: React.FC<FlavorBotModalProps> = ({
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.text}</p>
-                    {msg.debugError && (
+                    {isDebugMode && msg.debugError && (
                       <p className="mt-1.5 text-[10px] text-gray-500 dark:text-[#8FA89A] font-mono leading-tight border-t border-gray-200/60 dark:border-[#3F6B57]/40 pt-1">
                         {msg.debugError}
                       </p>

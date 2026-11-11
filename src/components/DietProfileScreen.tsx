@@ -72,7 +72,10 @@ export const DietProfileScreen: React.FC<DietProfileScreenProps> = ({
         <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#193826] dark:text-[#F1F6F2] mb-1.5 tracking-tight">
           What do you eat?
         </h1>
-        <p className="text-sm md:text-base text-[#193826]/75 dark:text-[#BBCDC2] font-medium">
+        <p className="text-sm md:text-base text-[#193826] dark:text-[#F1F6F2] font-semibold max-w-xl mx-auto">
+          Flavor Bridge rebuilds your favourite dish so it tastes the same with less salt, sugar and fat.
+        </p>
+        <p className="text-xs sm:text-sm text-[#193826]/70 dark:text-[#BBCDC2] mt-1 font-medium">
           Pick your diet and any allergies to get started.
         </p>
       </div>
@@ -145,6 +148,11 @@ export const DietProfileScreen: React.FC<DietProfileScreenProps> = ({
             );
           })}
         </div>
+
+        {/* Small grey note under allergy chips */}
+        <p className="text-xs text-[#193826]/70 dark:text-[#8FA89A] mt-2.5 font-medium">
+          We use this to keep unsafe ingredients out of your swaps.
+        </p>
 
         {/* Nut-Free rule banner ONLY visible if Nuts is selected */}
         {allergies.includes('Nuts') && (
