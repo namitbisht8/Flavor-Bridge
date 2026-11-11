@@ -93,15 +93,15 @@ export const DietProfileScreen: React.FC<DietProfileScreenProps> = ({
                 key={item.id}
                 type="button"
                 onClick={() => setDiet(item.id)}
-                className={`text-left p-5 rounded-2xl border-2 border-[#193826] dark:bg-[#15211B] transition-all cursor-pointer relative ${
+                className={`text-left p-5 rounded-2xl border-2 border-[#193826] dark:bg-[#15211B] transition-all duration-150 cursor-pointer relative ${
                   isSelected
-                    ? `${getDietLightBgColor(item.id)} dark:bg-[#15211B] ink-shadow ring-2 ring-[#FF7B25] dark:ring-0 dark:border-[2.5px] dark:border-[#FFB34D] dark:shadow-[0_0_0_4px_rgba(255,179,77,0.18),3px_3px_0_rgba(0,0,0,0.45)] translate-y-[-2px]`
-                    : 'bg-[#FAF7F2] hover:bg-[#FFFDF9] dark:bg-[#15211B] dark:border-[1.5px] dark:border-[#3F6B57] shadow-xs hover:translate-y-[-1px] dark:hover:border-[#5FD39A]/60'
+                    ? `${getDietLightBgColor(item.id)} dark:bg-[#15211B] ink-shadow ring-2 ring-[#FF7B25] dark:ring-0 dark:border-[2.5px] dark:border-[#FFB34D] dark:shadow-[0_0_0_4px_rgba(255,179,77,0.18),3px_3px_0_rgba(0,0,0,0.45)] translate-y-[-2px] dark:hover:shadow-[0_0_0_4px_rgba(255,179,77,0.28),3px_3px_0_rgba(0,0,0,0.45)]`
+                    : 'bg-[#FAF7F2] hover:bg-[#FFFDF9] dark:bg-[#15211B] dark:border-[1.5px] dark:border-[#3F6B57] shadow-xs hover:translate-y-[-1px] dark:hover:bg-[#1B2A23] dark:hover:border-[#5FA283] dark:hover:translate-y-[-2px] dark:hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div
-                    className={`w-12 h-12 rounded-xl border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] dark:bg-[#22332A] text-[#193826] dark:text-[#8FE3B6] flex items-center justify-center ${
+                    className={`w-12 h-12 rounded-xl border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] dark:bg-[#22332A] text-[#193826] dark:text-[#8FE3B6] flex items-center justify-center shrink-0 ${
                       isSelected ? 'bg-white dark:bg-[#22332A]' : 'bg-white/80 dark:bg-[#22332A]'
                     }`}
                   >
@@ -145,12 +145,12 @@ export const DietProfileScreen: React.FC<DietProfileScreenProps> = ({
                 key={allergy.id}
                 type="button"
                 onClick={() => handleAllergyToggle(allergy.id)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold border-2 border-[#193826] dark:border-[1.5px] transition-all cursor-pointer flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-xl text-sm font-bold border-2 border-[#193826] dark:border-[1.5px] transition-all duration-150 cursor-pointer flex items-center gap-2 ${
                   isSelected
                     ? allergy.id === 'None'
-                      ? 'bg-[#D8EFDF] text-[#193826] dark:bg-[#FFB34D] dark:border-[#FFB34D] dark:text-[#1A1200] ink-shadow-sm translate-y-[-1px]'
-                      : 'bg-[#FF7B25] text-white dark:bg-[#FFB34D] dark:border-[#FFB34D] dark:text-[#1A1200] ink-shadow-sm translate-y-[-1px]'
-                    : 'bg-white dark:bg-[#1B2A23] text-[#193826] dark:text-[#EAF3EC] dark:border-[#3F6B57] hover:bg-[#FAF7F2] dark:hover:border-[#5FD39A]/60'
+                      ? 'bg-[#D8EFDF] text-[#193826] dark:bg-[#FFB34D] dark:border-[#FFB34D] dark:text-[#1A1200] dark:hover:bg-[#FFC266] ink-shadow-sm translate-y-[-1px]'
+                      : 'bg-[#FF7B25] text-white dark:bg-[#FFB34D] dark:border-[#FFB34D] dark:text-[#1A1200] dark:hover:bg-[#FFC266] ink-shadow-sm translate-y-[-1px]'
+                    : 'bg-white dark:bg-[#1B2A23] text-[#193826] dark:text-[#EAF3EC] dark:border-[#3F6B57] hover:bg-[#FAF7F2] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283]'
                 }`}
               >
                 {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
@@ -175,7 +175,7 @@ export const DietProfileScreen: React.FC<DietProfileScreenProps> = ({
         <button
           type="button"
           onClick={onContinue}
-          className="w-full sm:w-auto min-w-[260px] py-3.5 px-8 rounded-xl bg-[#FF7B25] text-white dark:bg-[#FFB34D] dark:text-[#1A1200] dark:hover:bg-[#FFA534] text-base sm:text-lg font-bold ink-button flex items-center justify-center gap-2 cursor-pointer shadow-md"
+          className="w-full sm:w-auto min-w-[260px] py-3.5 px-8 rounded-xl bg-[#FF7B25] text-white dark:bg-[#FFB34D] dark:text-[#1A1200] hover:bg-[#E86A18] dark:hover:bg-[#FFC266] text-base sm:text-lg font-bold ink-button flex items-center justify-center gap-2 cursor-pointer shadow-md transition-all duration-150"
         >
           <span>Continue to Build Dish</span>
           <ArrowRight className="w-5 h-5" />

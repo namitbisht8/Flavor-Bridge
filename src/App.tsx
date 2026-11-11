@@ -25,6 +25,13 @@ export default function App() {
   const [selectedDishId, setSelectedDishId] = useState<string>('butter-chicken');
   const [rebuiltIngredients, setRebuiltIngredients] = useState<string[]>(TOGGLEABLE_INGREDIENTS);
 
+  // Auto-switch to vegetarian dish if user switches to Vegetarian/Vegan while Butter Chicken is selected
+  React.useEffect(() => {
+    if ((diet === 'Vegetarian' || diet === 'Vegan') && selectedDishId === 'butter-chicken') {
+      setSelectedDishId('dal-chawal');
+    }
+  }, [diet, selectedDishId]);
+
   // Compute rebuilt recipe via centralized service
   const recipeResult = useMemo(() => {
     return getRebuiltRecipe(selectedDishId, diet, allergies, rebuiltIngredients);
@@ -109,7 +116,14 @@ export default function App() {
       </main>
 
       {/* Floating FlavorBot Assistant button on all screens */}
-      <FlavorBotModal />
+      <FlavorBotModal
+        recipe={recipeResult.recipe}
+        dishId={selectedDishId}
+        diet={diet}
+        allergies={allergies}
+        rebuiltIngredients={rebuiltIngredients}
+        shoppingListTotal={recipeResult.shoppingListTotal}
+      />
 
       {/* Clean 3-step footer */}
       <Footer onStepClick={handleStepNavigation} />

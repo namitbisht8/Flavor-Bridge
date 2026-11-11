@@ -132,6 +132,80 @@
   box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.55);
 }
 
+/* ========================================================
+   FOCUS, TRANSITIONS & HOVER ACCESSIBILITY
+   ======================================================== */
+
+/* 4. Keyboard focus: visible 2px saffron focus outline in both themes */
+:focus-visible {
+  outline: 2px solid #FF7B25 !important;
+  outline-offset: 2px !important;
+}
+
+.dark :focus-visible {
+  outline: 2px solid #FFB34D !important;
+  outline-offset: 2px !important;
+}
+
+/* 5. Add transition: 150ms for background, border and transform so hover feels smooth, and respect prefers-reduced-motion */
+@media (prefers-reduced-motion: no-preference) {
+  button,
+  input,
+  a,
+  [role="button"],
+  .ink-button,
+  .ink-border {
+    transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease, color 150ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 6. Check touch devices: do not leave a stuck white hover state after tapping. Wrap hover styles in @media (hover: hover) */
+@media (hover: hover) {
+  /* Dark mode card hover rules:
+     Cards on hover: background #1B2A23, border #5FA283, gentle lift translateY(-2px), soft shadow */
+  .dark .card-hover:hover {
+    background-color: #1B2A23 !important;
+    border-color: #5FA283 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Universal dark-mode guard: ensure any residual light-theme hover never turns elements white or light */
+  .dark button:hover:not([class*="dark:hover:bg-"]):not([class*="dark:bg-[#FFB34D]"]):not([class*="bg-[#FF7B25]"]),
+  .dark [role="button"]:hover:not([class*="dark:hover:bg-"]) {
+    color: #F1F6F2;
+  }
+
+  /* Prevent any light background colors from ever leaking on hover in dark mode */
+  .dark [class*="hover:bg-white"]:hover:not([class*="dark:hover:bg-"]),
+  .dark [class*="hover:bg-[#FFF"]:hover:not([class*="dark:hover:bg-"]),
+  .dark [class*="hover:bg-[#FAF"]:hover:not([class*="dark:hover:bg-"]),
+  .dark [class*="hover:bg-[#D8E"]:hover:not([class*="dark:hover:bg-"]),
+  .dark [class*="hover:bg-[#FFE"]:hover:not([class*="dark:hover:bg-"]),
+  .dark [class*="hover:bg-[#D6E"]:hover:not([class*="dark:hover:bg-"]) {
+    background-color: #1B2A23 !important;
+    border-color: #5FA283 !important;
+    color: #F1F6F2 !important;
+  }
+}
+
+/* Touch devices: reset stuck hover background */
+@media (hover: none) {
+  .dark button:hover,
+  .dark [role="button"]:hover {
+    background-color: inherit;
+  }
+}
+
 /* Print styles for Recipe Guide */
 @media print {
   .no-print {

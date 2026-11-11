@@ -36,10 +36,15 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
   onBackToBuild,
   onBackToDiet,
 }) => {
-  const [expandedSwaps, setExpandedSwaps] = useState<Record<string, boolean>>({
-    'swap-salt': true,
-    'swap-butter-cream': true,
-  });
+  const [expandedSwaps, setExpandedSwaps] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const initial: Record<string, boolean> = {};
+    recipe.swaps.forEach((s) => {
+      initial[s.id] = true;
+    });
+    setExpandedSwaps(initial);
+  }, [recipe.swaps]);
   const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>({});
   const [isSaved, setIsSaved] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -200,14 +205,14 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
         <div className="flex items-center gap-2 self-start sm:self-center">
           <button
             onClick={onBackToBuild}
-            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#FFE0CE] dark:hover:border-[#5FD39A]/60 text-[#193826] dark:text-[#BBCDC2] transition-colors cursor-pointer flex items-center gap-1.5"
+            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#FFE0CE] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] dark:hover:text-[#F1F6F2] text-[#193826] dark:text-[#BBCDC2] transition-colors duration-150 cursor-pointer flex items-center gap-1.5"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Customize</span>
           </button>
           <button
             onClick={onBackToDiet}
-            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#D6E8F4] dark:hover:border-[#5FD39A]/60 text-[#193826] dark:text-[#BBCDC2] transition-colors cursor-pointer"
+            className="text-xs font-bold px-3 py-1.5 rounded-lg border border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFFDF9] dark:bg-[#1B2A23] hover:bg-[#D6E8F4] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] dark:hover:text-[#F1F6F2] text-[#193826] dark:text-[#BBCDC2] transition-colors duration-150 cursor-pointer"
           >
             Diet Profile
           </button>
@@ -236,7 +241,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
               </span>
             </div>
             <p className="text-xs text-red-800 dark:text-[#BBCDC2] leading-relaxed font-medium">
-              Because original refined table salt was kept (+520 mg sodium sample estimate), the total rebuilt sodium reaches <strong className="text-red-900 dark:text-[#F1F6F2]">{recipe.rebuiltSodiumMg} mg</strong> ({recipe.sodiumLimitPercentage}% of your {recipe.limitSodiumMg} mg limit). To stay under limit, toggle &quot;Refined table salt&quot; back on in Step 2.
+              Because original refined table salt was kept (+{recipe.saltPenaltyMg ?? 520} mg sodium sample estimate), the total rebuilt sodium reaches <strong className="text-red-900 dark:text-[#F1F6F2]">{recipe.rebuiltSodiumMg} mg</strong> ({recipe.sodiumLimitPercentage}% of your {recipe.limitSodiumMg} mg limit). To stay under limit, toggle &quot;Refined table salt&quot; back on in Step 2.
             </p>
           </div>
         </div>
@@ -299,7 +304,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
               </div>
 
               <div className="text-[11px] text-[#193826]/70 dark:text-[#8FA89A] font-medium">
-                Ingredients: Salted dairy butter, heavy cream, refined table salt, refined white sugar.
+                Traditional ingredients: {recipe.originalIngredients.join(', ')}.
               </div>
             </div>
           </div>
@@ -380,13 +385,12 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                 </div>
               </div>
 
-              <div className="text-[11px] text-[#193826]/80 dark:text-[#BBCDC2] font-medium">
-                {recipe.rebuiltIngredients.includes('Refined table salt')
-                  ? 'Rebuilt with roasted cumin + amchur. '
-                  : 'Table salt kept. '}
-                {recipe.rebuiltIngredients.includes('Heavy dairy cream') || recipe.rebuiltIngredients.includes('Salted table butter & ghee')
-                  ? `Rebuilt with ${allergies.includes('Nuts') ? 'pumpkin seed cream' : 'cashew cream'} & bloomed kasuri methi.`
-                  : 'Dairy butter and cream kept.'}
+              <div className="text-[11px] text-[#193826]/80 dark:text-[#BBCDC2] font-medium flex flex-wrap gap-x-2 gap-y-0.5">
+                {recipe.swaps.map((s) => (
+                  <span key={s.id}>
+                    {s.isRebuilt !== false ? `✓ ${s.rebuiltIngredient}` : `⚠ ${s.originalIngredient} kept`}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
@@ -535,7 +539,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                   ? isPaused
                     ? 'bg-[#FFF0C5] dark:bg-[#1B2A23] text-[#193826] dark:text-[#FFB34D]'
                     : 'bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] animate-pulse'
-                  : 'bg-[#D6E8F4] dark:bg-[#1B2A23] text-[#193826] dark:text-[#7CC4F0] hover:bg-[#bce0f8] dark:hover:bg-[#22332A]'
+                  : 'bg-[#D6E8F4] dark:bg-[#1B2A23] text-[#193826] dark:text-[#7CC4F0] hover:bg-[#bce0f8] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283]'
               }`}
             >
               <Volume2 className="w-3.5 h-3.5" />
@@ -545,7 +549,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
               <button
                 onClick={handleStopSpeech}
                 title="Stop reading aloud"
-                className="p-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-red-100 dark:bg-[#241618] text-red-700 dark:text-[#FF8A80] hover:bg-red-200 dark:hover:bg-red-950 cursor-pointer"
+                className="p-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-red-100 dark:bg-[#241618] text-red-700 dark:text-[#FF8A80] hover:bg-red-200 dark:hover:bg-[#34171A] cursor-pointer"
               >
                 <VolumeX className="w-3.5 h-3.5" />
               </button>
@@ -560,10 +564,10 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
               <div
                 key={step.stepNumber}
                 onClick={() => toggleStepCompleted(step.stepNumber)}
-                className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                className={`p-4 rounded-xl border-2 transition-all duration-150 cursor-pointer ${
                   isDone
                     ? 'bg-[#D8EFDF]/50 dark:bg-[#12281F] border-emerald-700 dark:border-[#5FD39A] opacity-90'
-                    : 'bg-[#FAF7F2] dark:bg-[#1B2A23] border-[#193826] dark:border-[#3F6B57] hover:bg-white dark:hover:bg-[#22332A]'
+                    : 'bg-[#FAF7F2] dark:bg-[#1B2A23] border-[#193826] dark:border-[#3F6B57] hover:bg-white dark:hover:bg-[#22332A] dark:hover:border-[#5FA283]'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -638,7 +642,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                   href={`https://www.amazon.in/s?k=${encodeURIComponent(item.searchQuery)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#1B2A23] hover:bg-[#ffe394] dark:hover:bg-[#22332A] text-xs font-bold text-[#193826] dark:text-[#FFB34D] flex items-center gap-1 transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#1B2A23] hover:bg-[#ffe394] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] text-xs font-bold text-[#193826] dark:text-[#FFB34D] flex items-center gap-1 transition-colors duration-150 cursor-pointer"
                 >
                   <span>Amazon</span>
                   <ExternalLink className="w-3 h-3" />
@@ -648,7 +652,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
                   href={`https://www.flipkart.com/search?q=${encodeURIComponent(item.searchQuery)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#D6E8F4] dark:bg-[#1B2A23] hover:bg-[#b5dbf7] dark:hover:bg-[#22332A] text-xs font-bold text-[#193826] dark:text-[#7CC4F0] flex items-center gap-1 transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg border border-[#193826] dark:border-[#3F6B57] bg-[#D6E8F4] dark:bg-[#1B2A23] hover:bg-[#b5dbf7] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] text-xs font-bold text-[#193826] dark:text-[#7CC4F0] flex items-center gap-1 transition-colors duration-150 cursor-pointer"
                 >
                   <span>Flipkart</span>
                   <ExternalLink className="w-3 h-3" />
@@ -668,7 +672,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
           <button
             type="button"
             onClick={handleShareWhatsApp}
-            className="p-3 rounded-xl bg-white dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm text-[#193826] dark:text-[#5FD39A] hover:bg-[#D8EFDF] dark:hover:bg-[#22332A] transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
+            className="p-3 rounded-xl bg-white dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm text-[#193826] dark:text-[#5FD39A] hover:bg-[#D8EFDF] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] transition-colors duration-150 cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
           >
             <Share2 className="w-4 h-4 text-emerald-700 dark:text-[#5FD39A]" />
             <span>Share on WhatsApp</span>
@@ -677,10 +681,10 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
           <button
             type="button"
             onClick={handleSaveRecipe}
-            className={`p-3 rounded-xl border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs ${
+            className={`p-3 rounded-xl border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm transition-colors duration-150 cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs ${
               isSaved
-                ? 'bg-[#D8EFDF] dark:bg-[#12281F] text-[#193826] dark:text-[#5FD39A]'
-                : 'bg-white dark:bg-[#1B2A23] text-[#193826] dark:text-[#FFB34D] hover:bg-[#FFF0C5] dark:hover:bg-[#22332A]'
+                ? 'bg-[#D8EFDF] dark:bg-[#12281F] text-[#193826] dark:text-[#5FD39A] dark:hover:bg-[#193429]'
+                : 'bg-white dark:bg-[#1B2A23] text-[#193826] dark:text-[#FFB34D] hover:bg-[#FFF0C5] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283]'
             }`}
           >
             <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current text-[#193826] dark:text-[#5FD39A]' : 'text-[#FF7B25] dark:text-[#FFB34D]'}`} />
@@ -690,7 +694,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
           <button
             type="button"
             onClick={handleReadAloudToggle}
-            className="p-3 rounded-xl bg-white dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm text-[#193826] dark:text-[#7CC4F0] hover:bg-[#D6E8F4] dark:hover:bg-[#22332A] transition-colors cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
+            className="p-3 rounded-xl bg-white dark:bg-[#1B2A23] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm text-[#193826] dark:text-[#7CC4F0] hover:bg-[#D6E8F4] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283] transition-colors duration-150 cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
           >
             <Volume2 className="w-4 h-4 text-sky-800 dark:text-[#7CC4F0]" />
             <span>{isSpeaking ? (isPaused ? 'Resume' : 'Pause') : 'Read aloud'}</span>
@@ -699,7 +703,7 @@ export const RebuiltRecipeScreen: React.FC<RebuiltRecipeScreenProps> = ({
           <button
             type="button"
             onClick={handlePrint}
-            className="p-3 rounded-xl bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] border-2 border-[#193826] dark:border-[#3F6B57] font-bold text-xs sm:text-sm ink-button cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs"
+            className="p-3 rounded-xl bg-[#FF7B25] dark:bg-[#FFB34D] text-white dark:text-[#1A1200] border-2 border-[#193826] dark:border-[#3F6B57] hover:bg-[#E86A18] dark:hover:bg-[#FFC266] font-bold text-xs sm:text-sm ink-button cursor-pointer flex flex-col items-center justify-center gap-1.5 text-center shadow-xs transition-all duration-150"
           >
             <Printer className="w-4 h-4" />
             <span>Print Recipe Guide</span>

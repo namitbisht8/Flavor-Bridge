@@ -93,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({ currentStep, onStepClick }) => {
               onClick={toggleTheme}
               aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
               title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#15211B] text-[#193826] dark:text-[#FFB34D] flex items-center justify-center ink-shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0"
+              className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#15211B] text-[#193826] dark:text-[#FFB34D] flex items-center justify-center ink-shadow-sm hover:scale-105 active:scale-95 dark:hover:bg-[#1B2A23] dark:hover:border-[#5FA283] transition-all duration-150 cursor-pointer shrink-0"
             >
               {isDark ? (
                 <Moon className="w-5 h-5 text-[#FFB34D] transition-transform duration-200" />
@@ -115,12 +115,12 @@ export const Header: React.FC<HeaderProps> = ({ currentStep, onStepClick }) => {
                   key={s.num}
                   onClick={() => onStepClick(s.num)}
                   aria-current={isActive ? 'step' : undefined}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 dark:border-[1.5px] text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 dark:border-[1.5px] text-xs sm:text-sm font-bold transition-all duration-150 cursor-pointer ${
                     isActive
-                      ? 'bg-[#FF7B25] text-white border-[#193826] dark:bg-[#FFB34D] dark:text-[#1A1200] dark:border-[#FFB34D] ink-shadow-sm translate-y-[-1px]'
+                      ? 'bg-[#FF7B25] text-white border-[#193826] dark:bg-[#FFB34D] dark:text-[#1A1200] dark:border-[#FFB34D] dark:hover:bg-[#FFC266] ink-shadow-sm translate-y-[-1px]'
                       : isCompleted
-                      ? 'bg-[#D8EFDF] text-[#193826] border-[#193826] dark:bg-[#1B2A23] dark:text-[#5FD39A] dark:border-[#3F6B57] hover:bg-[#c2e4cc] dark:hover:bg-[#22332A]'
-                      : 'bg-transparent text-[#193826]/60 dark:text-[#8FA89A] border-dashed border-[#193826]/30 dark:border-[#3F6B57] hover:border-[#193826] dark:hover:text-[#F1F6F2]'
+                      ? 'bg-[#D8EFDF] text-[#193826] border-[#193826] dark:bg-[#1B2A23] dark:text-[#5FD39A] dark:border-[#3F6B57] hover:bg-[#c2e4cc] dark:hover:bg-[#22332A] dark:hover:border-[#5FA283]'
+                      : 'bg-transparent text-[#193826]/60 dark:text-[#8FA89A] border-dashed border-[#193826]/30 dark:border-[#3F6B57] hover:border-[#193826] dark:hover:border-[#5FA283] dark:hover:text-[#F1F6F2]'
                   }`}
                 >
                   {isCompleted ? (
@@ -148,7 +148,7 @@ export const Header: React.FC<HeaderProps> = ({ currentStep, onStepClick }) => {
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            className="hidden md:flex w-11 h-11 min-w-[44px] min-h-[44px] rounded-full border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#15211B] text-[#193826] dark:text-[#FFB34D] items-center justify-center ink-shadow-sm hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 ml-1"
+            className="hidden md:flex w-11 h-11 min-w-[44px] min-h-[44px] rounded-full border-2 border-[#193826] dark:border-[1.5px] dark:border-[#3F6B57] bg-[#FFF0C5] dark:bg-[#15211B] text-[#193826] dark:text-[#FFB34D] items-center justify-center ink-shadow-sm hover:scale-105 active:scale-95 dark:hover:bg-[#1B2A23] dark:hover:border-[#5FA283] transition-all duration-150 cursor-pointer shrink-0 ml-1"
           >
             {isDark ? (
               <Moon className="w-5 h-5 text-[#FFB34D] transition-transform duration-200" />
